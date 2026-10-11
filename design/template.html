@@ -6,6 +6,54 @@
     </sc-for>
   </div>
 
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+    <div ref="{{ scrollRef }}" style="flex:1;overflow-y:auto;display:flex;flex-wrap:wrap">
+      <aside style="flex:1 1 320px;max-width:440px;display:flex;flex-direction:column;justify-content:space-between;gap:40px;padding:48px;background:#efe9df;box-sizing:border-box">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="width:40px;height:40px;border-radius:12px;background:#1d1b18;color:#f7f5f0;display:flex;align-items:center;justify-content:center;font:700 20px 'Bricolage Grotesque',sans-serif">B</span>
+          <span style="font:700 20px 'Bricolage Grotesque',sans-serif">BandMatch</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <h1 style="margin:0;font:700 clamp(36px,4vw,52px)/1.02 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;text-wrap:balance">Encontre ou monte a sua banda.</h1>
+          <p style="margin:0;font-size:16px;line-height:1.5;color:#4a463f;text-wrap:pretty">Conectamos músicos por instrumento, horário, objetivo e estilo.</p>
+        </div>
+        <span></span>
+      </aside>
+      <main style="flex:2 1 480px;display:flex;justify-content:center;align-items:center;padding:56px 32px;box-sizing:border-box">
+        <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:24px">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <h2 style="margin:0;font:700 36px/1.08 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">{{ authTitle }}</h2>
+            <p style="margin:0;font-size:15px;color:#4a463f">{{ authSub }}</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+              <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#4a463f">Nome</span>
+                <input value="{{ lName }}" sc-camel-on-change="{{ onLName }}" sc-camel-on-key-down="{{ onAuthKey }}" placeholder="Seu nome" sc-camel-auto-complete="name" style="height:48px;border-radius:12px;border:1px solid #ddd8ce;background:#fff;padding:0 14px;font-size:15px;color:#1d1b18;outline:none;box-sizing:border-box;width:100%">
+              </label>
+            </sc-if>
+            <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#4a463f">E-mail</span>
+              <input type="email" value="{{ lEmail }}" sc-camel-on-change="{{ onLEmail }}" sc-camel-on-key-down="{{ onAuthKey }}" placeholder="voce@email.com" sc-camel-auto-complete="email" style="height:48px;border-radius:12px;border:1px solid #ddd8ce;background:#fff;padding:0 14px;font-size:15px;color:#1d1b18;outline:none;box-sizing:border-box;width:100%">
+            </label>
+            <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#4a463f">Senha</span>
+              <span style="position:relative;display:block">
+                <input type="{{ passType }}" value="{{ lPass }}" sc-camel-on-change="{{ onLPass }}" sc-camel-on-key-down="{{ onAuthKey }}" placeholder="{{ passHint }}" sc-camel-auto-complete="{{ passAuto }}" style="height:48px;border-radius:12px;border:1px solid #ddd8ce;background:#fff;padding:0 14px;font-size:15px;color:#1d1b18;outline:none;box-sizing:border-box;width:100%;padding-right:48px">
+                <button type="button" sc-camel-on-click="{{ togglePass }}" aria-label="Mostrar senha" style="position:absolute;right:6px;top:6px;width:36px;height:36px;border:none;border-radius:18px;background:transparent;color:#6b665e;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">{{ passIcon }}</span></button>
+              </span>
+            </label>
+            <sc-if value="{{ hasAuthErr }}" hint-placeholder-val="{{ false }}">
+              <span style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:#fbe4da;color:#8e3b1f;font-size:13px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">error</span>{{ authErr }}</span>
+            </sc-if>
+          </div>
+          <button sc-camel-on-click="{{ submitAuth }}" style="height:52px;border-radius:26px;border:none;background:#1d1b18;color:#f7f5f0;font-size:15px;font-weight:600">{{ authCta }}</button>
+          <div style="display:flex;justify-content:center;gap:6px;font-size:14px;color:#6b665e">
+            <span>{{ authSwitchText }}</span>
+            <button sc-camel-on-click="{{ switchAuth }}" style="padding:0;border:none;background:transparent;color:#b4502e;font-size:14px;font-weight:600">{{ authSwitchCta }}</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ isOnb }}" hint-placeholder-val="{{ true }}">
     <div ref="{{ scrollRef }}" style="flex:1;overflow-y:auto;display:flex;flex-wrap:wrap">
       <aside style="flex:1 1 320px;max-width:440px;display:flex;flex-direction:column;justify-content:space-between;gap:40px;padding:48px;background:#efe9df;box-sizing:border-box">
@@ -195,7 +243,7 @@
             <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
               <img sc-camel-src="{{ myPic }}" alt="" style="display:block;width:88px;height:88px;border-radius:44px;background:#efe9df;object-fit:cover;flex:none">
               <div style="display:flex;flex-direction:column;gap:4px">
-                <h1 style="margin:0;font:700 36px/1.05 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">Lucas Martins</h1>
+                <h1 style="margin:0;font:700 36px/1.05 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">{{ userName }}</h1>
                 <span style="font-size:15px;color:#6b665e">{{ instrumentsText }} · {{ city }}</span>
               </div>
             </div>
@@ -259,9 +307,9 @@
               <div style="display:flex;flex-direction:column;background:#fff;border:1px solid #e6e2da;border-radius:20px">
                 <div style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid #efebe4">
                   <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#6b665e">mail</span>
-                  <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;font-weight:600;color:#6b665e">E-mail</span><span style="font-size:15px;font-weight:500">lucas.martins@email.com</span></span>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;font-weight:600;color:#6b665e">E-mail</span><span style="font-size:15px;font-weight:500">{{ userEmail }}</span></span>
                 </div>
-                <button style="display:flex;align-items:center;gap:10px;padding:16px 18px;border:none;background:transparent;color:#b4502e;font-size:15px;font-weight:600;text-align:left;border-radius:0 0 20px 20px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">logout</span>Sair da conta</button>
+                <button sc-camel-on-click="{{ logout }}" style="display:flex;align-items:center;gap:10px;padding:16px 18px;border:none;background:transparent;color:#b4502e;font-size:15px;font-weight:600;text-align:left;border-radius:0 0 20px 20px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">logout</span>Sair da conta</button>
               </div>
             </div>
           </div>

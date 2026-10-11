@@ -11,7 +11,7 @@ const BANDS=[
  {id:'dom',name:'Domingo Cedo',goal:SG,when:'Sáb · 10h–12h',slot:'Sáb-Manhã',where:'Sala 1 · Escola',vaga:'Guitarra',genres:'MPB · Indie folk',rep:[{t:'Trem-Bala',a:'Ana Vilela'},{t:'Velha Infância',a:'Tribalistas'},{t:'Ho Hey',a:'The Lumineers'}],members:[{i:'CM',n:'Carol Melo',r:'Voz',lvl:'Intermediário',lead:true},{i:'TH',n:'Thiago Reis',r:'Teclado',lvl:'Avançado'}],rp:60,req:'Básico'},
  {id:'vol',name:'Volume 7',goal:'Tocar fora',when:'Sex · 20h–23h',slot:'Sex-Noite',where:'Estúdio externo',vaga:'Guitarra',genres:'Hard rock · Metal',rep:[{t:'Enter Sandman',a:'Metallica'},{t:'Roots Bloody Roots',a:'Sepultura'},{t:'Back in Black',a:'AC/DC'}],members:[{i:'GF',n:'Gui Faria',r:'Voz',lvl:'Avançado',lead:true},{i:'DN',n:'Duda Nunes',r:'Baixo',lvl:'Avançado'},{i:'PK',n:'Pedro Kim',r:'Bateria',lvl:'Avançado'}],rp:60,req:'Avançado'}
 ];
-const NAV=[['onb','Cadastro'],['profile','Meu perfil'],['search','Procurar bandas'],['detail','Detalhe da banda'],['sent','Solicitações enviadas'],['bands','Minhas bandas'],['create','Criar banda']];
+const NAV=[['login','Login'],['onb','Cadastro'],['profile','Meu perfil'],['search','Procurar bandas'],['detail','Detalhe da banda'],['sent','Solicitações enviadas'],['bands','Minhas bandas'],['create','Criar banda']];
 const STATUS={pending:{l:'Pendente',bg:'#f6ecd2',fg:'#7a5a12'},accepted:{l:'Aceita',bg:'#e3efe6',fg:'#2f6b45'},declined:{l:'Recusada',bg:'#efebe4',fg:'#6b665e'}};
 const TEST={fio:{w:'Qui, 15 out · 19h–21h',m:'Oi Lucas! Curtimos seu perfil. Bora fazer um ensaio teste na quinta? Pensamos em Do I Wanna Know, Equalize e Last Nite.'},dom:{w:'Sáb, 17 out · 10h–12h',m:'Oi Lucas, bem-vindo! Sábado de manhã funciona pra um ensaio teste?'},vol:{w:'Sex, 16 out · 20h–23h',m:'Fala Lucas! Sexta tem ensaio no estúdio, cola lá pra testar.'}};
 const G22={id:'g22',slots:['Ter-Noite'],name:'Garagem 22',role:'owner',genres:'Rock alternativo · Indie',goal:'Apresentação de vez em quando',when:'Ter · 19h–21h',where:'Sala 2 · Escola',vagas:['Bateria','Voz'],
@@ -38,16 +38,24 @@ const mc=v=>v>=85?OK:v>=65?'#8a6a1f':ACC;
 const chip=(label,on,onClick)=>({label,onClick,bg:on?INK:'#fff',fg:on?'#f7f5f0':INK,bd:on?INK:LINE});
 
 class Component extends DCLogic {
-  state={screen:'onb',step:0,tab:'search',searchView:'list',searchSub:'match',bandsView:'band',myBandId:'g22',
+  state={screen:'login',authMode:'login',lName:'',lEmail:'',lPass:'',showPass:false,authErr:'',userName:'Lucas Martins',userEmail:'lucas.martins@email.com',step:0,tab:'search',searchView:'list',searchSub:'match',bandsView:'band',myBandId:'g22',
     insts:[{id:1,name:'Guitarra',custom:'',level:'Intermediário'}],openInst:null,otherGenre:'',customGenres:[],genreFocus:false,genreIdx:0,city:'São Paulo, SP',cityQuery:'São Paulo, SP',cityFocus:false,cityIdx:0,
     dismissed:[],genres:['Rock alternativo','Indie','Rock nacional'],goal:SG,avail:{'Ter-Noite':1,'Qui-Noite':1,'Sáb-Manhã':1},fTime:true,fGoal:false,fLvl:false,bandId:'fio',
     sent:[{bandId:'dom',status:'pending',date:'5 out'}],myBands:[G22],
     cName:'',cVagas:['Bateria'],cGoal:null,cGoalText:'',cAvail:{},cRep:[],cSong:'',cArtist:'',cInst:'Guitarra',cAdd:null,draft:''};
   scrollRef=React.createRef();
-  key(s){ if(s.screen==='onb') return 'onb'; if(s.tab==='profile') return 'profile'; if(s.tab==='search') return s.searchView==='detail'?'detail':s.searchSub==='sent'?'sent':'search'; return s.bandsView==='create'?'create':'bands'; }
+  key(s){ if(s.screen==='login') return 'login'; if(s.screen==='onb') return 'onb'; if(s.tab==='profile') return 'profile'; if(s.tab==='search') return s.searchView==='detail'?'detail':s.searchSub==='sent'?'sent':'search'; return s.bandsView==='create'?'create':'bands'; }
   componentDidUpdate(){ const s=this.state,k=[this.key(s),s.step,s.myBandId,s.bandId].join('|'); if(this.lastKey!==undefined&&this.lastKey!==k&&this.scrollRef.current) this.scrollRef.current.scrollTop=0; this.lastKey=k; }
-  go=k=>this.setState({onb:{screen:'onb',step:0,editing:false},profile:{screen:'app',tab:'profile'},search:{screen:'app',tab:'search',searchView:'list',searchSub:'match'},detail:{screen:'app',tab:'search',searchView:'detail'},sent:{screen:'app',tab:'search',searchView:'list',searchSub:'sent'},bands:{screen:'app',tab:'bands',bandsView:'band'},create:{screen:'app',tab:'bands',bandsView:'create'}}[k]);
+  go=k=>this.setState({login:{screen:'login',authMode:'login',lPass:'',authErr:''},onb:{screen:'onb',step:0,editing:false},profile:{screen:'app',tab:'profile'},search:{screen:'app',tab:'search',searchView:'list',searchSub:'match'},detail:{screen:'app',tab:'search',searchView:'detail'},sent:{screen:'app',tab:'search',searchView:'list',searchSub:'sent'},bands:{screen:'app',tab:'bands',bandsView:'band'},create:{screen:'app',tab:'bands',bandsView:'create'}}[k]);
   lvlFor(n){const I=this.state.insts,x=I.find(i=>i.name===n&&i.level)||I.find(i=>i.level);return x?x.level:'Básico';}
+  submitAuth=()=>{ const s=this.state,up=s.authMode==='signup',email=s.lEmail.trim();
+    if(up&&!s.lName.trim()) return this.setState({authErr:'Informe seu nome.'});
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return this.setState({authErr:'Digite um e-mail válido.'});
+    if(s.lPass.length<6) return this.setState({authErr:'A senha precisa ter pelo menos 6 caracteres.'});
+    const base={authErr:'',lPass:'',showPass:false,userEmail:email};
+    // Protótipo: sem servidor, qualquer e-mail e senha válidos entram.
+    if(up) this.setState({...base,userName:s.lName.trim(),screen:'onb',step:1,editing:false});
+    else this.setState({...base,screen:'app',tab:'search',searchView:'list',searchSub:'match'}); };
   instName(x){return x.name==='Outro'?(x.custom||'Outro'):x.name;}
   bandCalc(b){
     const st=this.state, h=st.avail[b.slot]?100:20, o=b.goal===st.goal?100:40;
@@ -139,7 +147,19 @@ class Component extends DCLogic {
     return {
       scrollRef:this.scrollRef,myPic:PHOTO.LM,
       navItems:NAV.map(([k,l])=>({label:l,onClick:()=>this.go(k),devBg:K===k?'#f7f5f0':'transparent',devFg:K===k?INK:'#c9c2b5'})),
-      isOnb:S==='onb',isApp:S!=='onb',
+      isLogin:S==='login',isOnb:S==='onb',isApp:S==='app',
+      isSignup:st.authMode==='signup',authTitle:st.authMode==='signup'?'Criar conta':'Entrar',
+      authSub:st.authMode==='signup'?'Leva cerca de 2 minutos para montar seu perfil.':'Bom te ver de novo. Entre para ver suas bandas.',
+      authCta:st.authMode==='signup'?'Criar conta':'Entrar',
+      authSwitchText:st.authMode==='signup'?'Já tem conta?':'Ainda não tem conta?',authSwitchCta:st.authMode==='signup'?'Entrar':'Criar conta',
+      switchAuth:()=>this.setState(s=>({authMode:s.authMode==='signup'?'login':'signup',authErr:''})),
+      lName:st.lName,lEmail:st.lEmail,lPass:st.lPass,
+      onLName:e=>this.setState({lName:e.target.value,authErr:''}),onLEmail:e=>this.setState({lEmail:e.target.value,authErr:''}),onLPass:e=>this.setState({lPass:e.target.value,authErr:''}),
+      onAuthKey:e=>{if(e.key==='Enter')this.submitAuth();},submitAuth:this.submitAuth,
+      passType:st.showPass?'text':'password',passIcon:st.showPass?'visibility_off':'visibility',togglePass:()=>this.setState(s=>({showPass:!s.showPass})),
+      passHint:st.authMode==='signup'?'Mínimo de 6 caracteres':'Sua senha',passAuto:st.authMode==='signup'?'new-password':'current-password',
+      hasAuthErr:!!st.authErr,authErr:st.authErr,userName:st.userName,userEmail:st.userEmail,
+      logout:()=>this.go('login'),
       onbSteps:['Boas-vindas','Instrumento e nível','Estilo e objetivo','Disponibilidade e cidade'].map((label,i)=>({n:i+1,label,bg:i<st.step?OK:i===st.step?INK:'transparent',fg:i<=st.step?'#fff':'#6b665e',bd:i<st.step?OK:i===st.step?INK:'#c9c2b5',fw:i===st.step?700:500,tc:i<=st.step?INK:'#6b665e'})),
       isStep0:st.step===0,isStep1:st.step===1,isStep2:st.step===2,isStep3:st.step===3,
       showBack:st.step>0||st.editing,nextLabel:st.editing?'Salvar':st.step===0?'Criar meu perfil':st.step===3?'Ver bandas compatíveis':'Continuar',
