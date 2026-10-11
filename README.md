@@ -10,8 +10,17 @@ Telas do protótipo: Cadastro, Meu perfil, Procurar bandas, Detalhe da banda, So
 
 ## Estrutura
 
-- `index.html` — export completo do Claude Design (`BandMatch Web v2`), pronto para rodar.
-- `design/app.js` — lógica e dados do protótipo (instrumentos, gêneros, bandas de exemplo, estado das telas), extraídos do export para consulta.
-- `design/template.html` — marcação das telas, extraída do export para consulta.
+- `index.html` — o app, pronto para rodar (gerado a partir de `design/`).
+- `design/template.html` — marcação das telas.
+- `design/app.js` — lógica e dados do protótipo (instrumentos, gêneros, bandas de exemplo, estado das telas).
+- `design/photos.js` — fotos dos usuários (retratos ilustrados DiceBear "Notionists", licença CC0), gerado por `tools/photos.mjs`.
 
-Os arquivos em `design/` são só para leitura e referência: o app que roda é o `index.html`.
+## Editando
+
+Edite os arquivos em `design/` e rode:
+
+```bash
+python3 tools/build.py
+```
+
+O script coloca as mudanças dentro do `index.html`, mantendo o runtime, o React e as fontes embutidos.

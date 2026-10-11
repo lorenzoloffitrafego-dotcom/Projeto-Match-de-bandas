@@ -193,7 +193,7 @@
         <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
           <div style="max-width:960px;margin:0 auto;padding:clamp(28px,5vw,56px) clamp(20px,4vw,48px);display:flex;flex-direction:column;gap:28px;box-sizing:border-box">
             <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
-              <span style="width:88px;height:88px;border-radius:44px;background:#d9cfbf;display:flex;align-items:center;justify-content:center;font:700 30px 'Bricolage Grotesque',sans-serif;flex:none">LM</span>
+              <img sc-camel-src="{{ myPic }}" alt="" style="display:block;width:88px;height:88px;border-radius:44px;background:#efe9df;object-fit:cover;flex:none">
               <div style="display:flex;flex-direction:column;gap:4px">
                 <h1 style="margin:0;font:700 36px/1.05 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">Lucas Martins</h1>
                 <span style="font-size:15px;color:#6b665e">{{ instrumentsText }} · {{ city }}</span>
@@ -312,7 +312,7 @@
                         </span>
                         <span style="display:flex;align-items:center;gap:8px;margin-top:auto;width:100%">
                           <span style="display:flex">
-                            <sc-for list="{{ b.members }}" as="m" hint-placeholder-count="3"><span style="width:30px;height:30px;border-radius:15px;background:#d9cfbf;border:2px solid #fff;margin-right:-8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">{{ m.i }}</span></sc-for>
+                            <sc-for list="{{ b.membersV }}" as="m" hint-placeholder-count="3"><img sc-camel-src="{{ m.pic }}" alt="" style="display:block;width:30px;height:30px;border-radius:15px;background:#efe9df;object-fit:cover;flex:none;border:2px solid #fff;margin-right:-8px;box-sizing:content-box"></sc-for>
                           </span>
                           <span style="flex:1;font-size:13px;color:#6b665e;margin-left:10px">{{ b.members.length }} membros</span>
                           
@@ -423,7 +423,7 @@
                   <span style="display:flex;justify-content:space-between;align-items:baseline"><span style="display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#b4502e">groups</span>Integrantes</span><span style="font-size:13px;color:#6b665e">{{ band.memberCount }}</span></span>
                   <sc-for list="{{ band.membersV }}" as="m" hint-placeholder-count="3">
                     <div style="display:flex;align-items:center;gap:12px">
-                      <span style="width:44px;height:44px;border-radius:22px;background:#efe9df;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:22px;height:22px;display:block;background:center / contain no-repeat url({{ m.ico }})"></span></span>
+                      <span style="position:relative;width:44px;height:44px;flex:none"><img sc-camel-src="{{ m.pic }}" alt="" style="display:block;width:44px;height:44px;border-radius:22px;background:#efe9df;object-fit:cover;flex:none"><span style="position:absolute;right:-3px;bottom:-3px;width:20px;height:20px;border-radius:10px;background:#fff;border:1px solid #e6e2da;display:flex;align-items:center;justify-content:center"><span style="width:12px;height:12px;display:block;background:center / contain no-repeat url({{ m.ico }})"></span></span></span>
                       <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:15px;font-weight:600">{{ m.n }}</span><span style="font-size:13px;color:#6b665e">{{ m.r }}</span></span>
                       <sc-if value="{{ m.lead }}" hint-placeholder-val="{{ false }}"><span style="padding:4px 9px;border-radius:10px;background:#efe9df;font-size:11px;font-weight:700;color:#4a463f">LÍDER</span></sc-if>
                     </div>
@@ -489,7 +489,7 @@
                           <sc-if value="{{ m.isMine }}" hint-placeholder-val="{{ false }}"><div style="align-self:flex-end;max-width:min(440px,75%);padding:10px 14px;border-radius:18px 18px 4px 18px;background:#1d1b18;color:#f7f5f0;font-size:15px;line-height:1.4">{{ m.t }}</div></sc-if>
                           <sc-if value="{{ m.isOther }}" hint-placeholder-val="{{ true }}">
                             <div style="align-self:flex-start;display:flex;align-items:flex-end;gap:8px;max-width:min(480px,82%)">
-                              <span style="width:30px;height:30px;border-radius:15px;background:#d9cfbf;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex:none">{{ m.i }}</span>
+                              <img sc-camel-src="{{ m.pic }}" alt="" style="display:block;width:30px;height:30px;border-radius:15px;background:#efe9df;object-fit:cover;flex:none">
                               <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:12px;font-weight:600;color:#6b665e;padding-left:4px">{{ m.a }}</span><div style="padding:10px 14px;border-radius:18px 18px 18px 4px;background:#fff;border:1px solid #e6e2da;font-size:15px;line-height:1.4">{{ m.t }}</div></div>
                             </div>
                           </sc-if>
@@ -509,7 +509,7 @@
                       <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:18px 22px">
                         <sc-for list="{{ mb.membersV }}" as="m" hint-placeholder-count="2">
                           <div style="display:flex;align-items:center;gap:12px">
-                            <span style="width:44px;height:44px;border-radius:22px;background:#efe9df;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:23px;height:23px;display:block;background:center / contain no-repeat url({{ m.ico }})"></span></span>
+                            <span style="position:relative;width:44px;height:44px;flex:none"><img sc-camel-src="{{ m.pic }}" alt="" style="display:block;width:44px;height:44px;border-radius:22px;background:#efe9df;object-fit:cover;flex:none"><span style="position:absolute;right:-3px;bottom:-3px;width:20px;height:20px;border-radius:10px;background:#fff;border:1px solid #e6e2da;display:flex;align-items:center;justify-content:center"><span style="width:12px;height:12px;display:block;background:center / contain no-repeat url({{ m.ico }})"></span></span></span>
                             <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:15px;font-weight:600">{{ m.n }}</span><span style="font-size:13px;color:#6b665e">{{ m.r }} · {{ m.lvl }}</span></span>
                             <sc-if value="{{ m.hasTag }}" hint-placeholder-val="{{ false }}"><span style="padding:4px 9px;border-radius:10px;background:#efe9df;color:#4a463f;font-size:11px;font-weight:700">{{ m.tag }}</span></sc-if>
                             <sc-if value="{{ m.canRemove }}" hint-placeholder-val="{{ false }}"><button sc-camel-on-click="{{ m.remove }}" title="Remover da banda" aria-label="Remover da banda" style="height:32px;padding:0 12px;border-radius:16px;border:1px solid #ddd8ce;background:#fff;color:#6b665e;font-size:12px;font-weight:600">Remover</button></sc-if>
@@ -565,64 +565,56 @@
                 <sc-if value="{{ isBandReqs }}" hint-placeholder-val="{{ false }}">
                   <div style="display:flex;flex-direction:column;gap:12px">
                     <sc-for list="{{ mb.reqsV }}" as="q" hint-placeholder-count="2">
-                      <div style="display:flex;flex-direction:column;border-radius:22px;background:#fff;border:1px solid #e6e2da;overflow:hidden">
-                        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 20px">
-                          <button sc-camel-on-click="{{ q.toggle }}" style="flex:1 1 260px;min-width:0;display:flex;align-items:center;gap:14px;padding:0;border:none;background:transparent;color:#1d1b18;text-align:left">
-                            <span style="width:48px;height:48px;border-radius:24px;background:#d9cfbf;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:none">{{ q.i }}</span>
-                            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
-                              <span style="font-size:16px;font-weight:700">{{ q.n }}</span>
-                              <span style="display:flex;gap:6px;flex-wrap:wrap">
-                                <span style="display:flex;align-items:center;gap:6px;padding:4px 10px 4px 6px;border-radius:10px;background:#efe9df;font-size:12px;font-weight:600;color:#4a463f"><span style="width:16px;height:16px;display:block;background:center / contain no-repeat url({{ q.ico }})"></span>{{ q.r }}</span>
-                                <span style="padding:4px 10px;border-radius:10px;background:#efe9df;font-size:12px;font-weight:600;color:#4a463f">{{ q.lvl }}</span>
-                              </span>
-                            </span>
-                            <span style="display:flex;align-items:center;gap:2px;font-size:13px;font-weight:600;color:#6b665e;white-space:nowrap">{{ q.toggleLabel }}<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;transform:rotate({{ q.rot }});transition:transform .2s">expand_more</span></span>
-                          </button>
+                      <div style="display:flex;flex-direction:column;gap:20px;padding:24px;border-radius:22px;background:#fff;border:1px solid #e6e2da">
+                        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+                          <img sc-camel-src="{{ q.pic }}" alt="" style="display:block;width:64px;height:64px;border-radius:32px;background:#efe9df;object-fit:cover;flex:none">
+                          <div style="flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:4px">
+                            <span style="font:700 19px 'Bricolage Grotesque',sans-serif">{{ q.n }}</span>
+                            <span style="display:flex;align-items:center;gap:4px;font-size:14px;color:#6b665e"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">location_on</span>{{ q.city }}</span>
+                          </div>
                           <div style="display:flex;gap:8px">
                             <button sc-camel-on-click="{{ q.decline }}" style="height:42px;padding:0 18px;border-radius:21px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Recusar</button>
                             <button sc-camel-on-click="{{ q.accept }}" style="height:42px;padding:0 20px;border-radius:21px;border:none;background:#e8774f;color:#1d1b18;font-size:14px;font-weight:600">Aceitar</button>
                           </div>
                         </div>
-                        <sc-if value="{{ q.isOpen }}" hint-placeholder-val="{{ false }}">
-                          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;padding:20px;border-top:1px solid #efebe4;background:#fbfaf7">
-                            <div style="display:flex;flex-direction:column;gap:16px">
-                              <div style="padding:14px 16px;border-radius:14px;background:#fff;border:1px solid #efebe4;font-size:14px;line-height:1.5;color:#4a463f">“{{ q.note }}”</div>
-                              <div style="display:flex;flex-direction:column;gap:8px">
-                                <span style="font-size:12px;font-weight:600;color:#6b665e">Instrumentos</span>
-                                <div style="display:flex;gap:8px;flex-wrap:wrap">
-                                  <sc-for list="{{ q.instsV }}" as="x" hint-placeholder-count="1">
-                                    <span style="display:flex;align-items:center;gap:10px;padding:8px 12px 8px 8px;border-radius:12px;background:#fff;border:1px solid #efebe4"><span style="width:32px;height:32px;border-radius:16px;background:#efe9df;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:17px;height:17px;display:block;background:center / contain no-repeat url({{ x.ico }})"></span></span><span style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:600">{{ x.name }}</span><span style="font-size:12px;color:#6b665e">{{ x.level }}</span></span></span>
-                                  </sc-for>
-                                </div>
-                              </div>
-                              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                                <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;font-weight:600;color:#6b665e">Objetivo</span><span style="font-size:14px;font-weight:600">{{ q.goal }}</span><span style="font-size:12px;font-weight:600;color:{{ q.goalFg }}">{{ q.goalFit }}</span></div>
-                                <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;font-weight:600;color:#6b665e">Cidade</span><span style="font-size:14px;font-weight:600">{{ q.city }}</span></div>
-                              </div>
-                              <div style="display:flex;flex-direction:column;gap:8px">
-                                <span style="font-size:12px;font-weight:600;color:#6b665e">Gêneros</span>
-                                <div style="display:flex;gap:6px;flex-wrap:wrap">
-                                  <sc-for list="{{ q.genresV }}" as="g" hint-placeholder-count="3"><span style="padding:5px 10px;border-radius:10px;background:{{ g.bg }};color:{{ g.fg }};font-size:12px;font-weight:600">{{ g.label }}</span></sc-for>
-                                </div>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;padding-top:20px;border-top:1px solid #efebe4">
+                          <div style="display:flex;flex-direction:column;gap:20px">
+                            <div style="display:flex;flex-direction:column;gap:10px">
+                              <span style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a847a">INSTRUMENTOS</span>
+                              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                <sc-for list="{{ q.instsV }}" as="x" hint-placeholder-count="1">
+                                  <span style="display:flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;border-radius:14px;background:#f7f5f0"><span style="width:32px;height:32px;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:17px;height:17px;display:block;background:center / contain no-repeat url({{ x.ico }})"></span></span><span style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:600">{{ x.name }}</span><span style="font-size:12px;color:#6b665e">{{ x.level }}</span></span></span>
+                                </sc-for>
                               </div>
                             </div>
-                            <div style="display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:16px;background:#fff;border:1px solid #efebe4">
-                              <span style="font-size:12px;font-weight:600;color:#6b665e">Disponibilidade</span>
-                              <div style="display:grid;grid-template-columns:20px repeat(7,minmax(0,1fr));gap:4px;align-items:center">
-                        <sc-for list="{{ calHead }}" as="h" hint-placeholder-count="8"><span style="font-size:11px;font-weight:600;color:#6b665e;text-align:center">{{ h }}</span></sc-for>
-                        <sc-for list="{{ q.cal }}" as="a" hint-placeholder-count="24">
-                          <sc-if value="{{ a.isLabel }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:#6b665e">{{ a.label }}</span></sc-if>
-                          <sc-if value="{{ a.isCell }}" hint-placeholder-val="{{ true }}"><span style="height:26px;border-radius:7px;background:{{ a.bg }};border:1px solid {{ a.bd }};box-sizing:border-box"></span></sc-if>
-                        </sc-for>
-                      </div>
-                              <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#6b665e">
-                                <span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:3px;background:#1d1b18"></span>Ensaio da banda</span>
-                                <span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:3px;background:#e3efe6;border:1px solid #9cc8a8;box-sizing:border-box"></span>Livre</span>
+                            <div style="display:flex;flex-direction:column;gap:6px">
+                              <span style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a847a">OBJETIVO</span>
+                              <span style="font-size:15px;font-weight:600">{{ q.goal }}</span>
+                              <span style="font-size:13px;font-weight:600;color:{{ q.goalFg }}">{{ q.goalFit }}</span>
+                            </div>
+                            <div style="display:flex;flex-direction:column;gap:10px">
+                              <span style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a847a">GÊNEROS</span>
+                              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                                <sc-for list="{{ q.genresV }}" as="g" hint-placeholder-count="3"><span style="padding:5px 10px;border-radius:10px;background:{{ g.bg }};color:{{ g.fg }};font-size:12px;font-weight:600">{{ g.label }}</span></sc-for>
                               </div>
-                              <span style="font-size:13px;font-weight:600;color:{{ q.timeFg }}">{{ q.timeFit }}</span>
                             </div>
                           </div>
-                        </sc-if>
+                          <div style="display:flex;flex-direction:column;gap:12px">
+                            <span style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a847a">DISPONIBILIDADE</span>
+                            <div style="display:grid;grid-template-columns:20px repeat(7,minmax(0,1fr));gap:4px;align-items:center">
+                              <sc-for list="{{ calHead }}" as="h" hint-placeholder-count="8"><span style="font-size:11px;font-weight:600;color:#6b665e;text-align:center">{{ h }}</span></sc-for>
+                              <sc-for list="{{ q.cal }}" as="a" hint-placeholder-count="24">
+                                <sc-if value="{{ a.isLabel }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:#6b665e">{{ a.label }}</span></sc-if>
+                                <sc-if value="{{ a.isCell }}" hint-placeholder-val="{{ true }}"><span style="height:26px;border-radius:7px;background:{{ a.bg }};border:1px solid {{ a.bd }};box-sizing:border-box"></span></sc-if>
+                              </sc-for>
+                            </div>
+                            <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#6b665e">
+                              <span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:3px;background:#1d1b18"></span>Ensaio da banda</span>
+                              <span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:3px;background:#e3efe6;border:1px solid #9cc8a8;box-sizing:border-box"></span>Livre</span>
+                            </div>
+                            <span style="font-size:13px;font-weight:600;color:{{ q.timeFg }}">{{ q.timeFit }}</span>
+                          </div>
+                        </div>
                       </div>
                     </sc-for>
                     <sc-if value="{{ mb.noReqs }}" hint-placeholder-val="{{ false }}">
