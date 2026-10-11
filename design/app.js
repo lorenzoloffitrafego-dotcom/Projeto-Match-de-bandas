@@ -41,7 +41,7 @@ class Component extends DCLogic {
   state={screen:'onb',step:0,tab:'search',searchView:'list',searchSub:'match',bandsView:'band',myBandId:'g22',
     insts:[{id:1,name:'Guitarra',custom:'',level:'Intermediário'}],openInst:null,otherGenre:'',customGenres:[],genreFocus:false,genreIdx:0,city:'São Paulo, SP',cityQuery:'São Paulo, SP',cityFocus:false,cityIdx:0,
     dismissed:[],genres:['Rock alternativo','Indie','Rock nacional'],goal:SG,avail:{'Ter-Noite':1,'Qui-Noite':1,'Sáb-Manhã':1},fTime:true,fGoal:false,fLvl:false,bandId:'fio',
-    sent:[{bandId:'dom',status:'pending',date:'5 out'}],notif:{novas:true,respostas:true,chat:false},myBands:[G22],
+    sent:[{bandId:'dom',status:'pending',date:'5 out'}],myBands:[G22],
     cName:'',cVagas:['Bateria'],cGoal:null,cGoalText:'',cAvail:{},cRep:[],cSong:'',cArtist:'',cInst:'Guitarra',cAdd:null,draft:''};
   scrollRef=React.createRef();
   key(s){ if(s.screen==='onb') return 'onb'; if(s.tab==='profile') return 'profile'; if(s.tab==='search') return s.searchView==='detail'?'detail':s.searchSub==='sent'?'sent':'search'; return s.bandsView==='create'?'create':'bands'; }
@@ -172,7 +172,6 @@ class Component extends DCLogic {
       profInsts:done.map(x=>{const n=this.instName(x);return {name:n,level:x.level,ico:ico(n,INK)};}),instEdit:()=>this.setState({screen:'onb',step:1,editing:true}),
       availOpen:!!st.availOpen,availRot:st.availOpen?'180deg':'0deg',toggleAvail:()=>this.setState(s=>({availOpen:!s.availOpen})),availCount:slots.length?slots.length+' horários por semana':'Nenhum horário marcado',
       profileRows:[['flag','Objetivo',st.goal,2],['library_music','Gêneros',[...st.genres.filter(x=>x!=='Outro'),...st.customGenres].join(', ')||'—',2],['location_on','Cidade',st.city||'—',3]].map(([icon,label,value,step])=>({icon,label,value,edit:()=>this.setState({screen:'onb',step,editing:true})})),
-      notifRows:[['novas','Novas bandas compatíveis','notifications'],['respostas','Respostas às minhas solicitações','mark_email_read'],['chat','Mensagens das minhas bandas','chat']].map(([k,label,icon])=>{const on=st.notif[k];return {label,icon,bg:on?OK:'#d9d3c8',jc:on?'flex-end':'flex-start',toggle:()=>this.setState(s=>({notif:{...s.notif,[k]:!s.notif[k]}}))};}),
 
       calHead:['',...DAYS],isSearchList:st.searchView==='list',isDetail:st.searchView==='detail',isMatchSub:st.searchSub==='match',isSentSub:st.searchSub==='sent',
       searchSubs:[['match','Compatíveis',shown.length],['sent','Solicitações enviadas',st.sent.length]].map(([k,label,n])=>({label,n,...seg(st.searchSub===k),onClick:()=>this.setState({searchSub:k})})),
