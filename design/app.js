@@ -1,9 +1,21 @@
 const INK='#1d1b18', LINE='#ddd8ce', ACC='#b4502e', OK='#2f6b45';
-const INSTR=['Voz','Guitarra','Violão','Baixo','Bateria','Percussão','Teclado','Piano','Saxofone','Trompete','Trombone','Flauta','Violino','Violoncelo','Gaita','Ukulele','Cavaquinho','Acordeão','DJ / Produção'];
-const GENRES=['Rock','Rock alternativo','Rock nacional','Indie','Pop','Pop rock','MPB','Samba','Pagode','Sertanejo','Forró','Funk','Rap / Hip hop','R&B / Soul','Reggae','Jazz','Blues','Bossa nova','Metal','Hard rock','Punk','Gospel','Eletrônica','Folk / Country'];
+// Instrumentos agrupados por família; INSTR segue a mesma ordem em todas as listas.
+const INST_GROUPS=[['Cordas',['Guitarra','Violão','Baixo','Cavaquinho','Ukulele','Violino','Violoncelo']],['Teclas',['Teclado','Piano','Acordeão']],['Percussão',['Bateria','Percussão']],['Sopros',['Saxofone','Trompete','Trombone','Flauta','Gaita']],['Voz',['Voz']],['Outros',['DJ / Produção']]];
+const INSTR=INST_GROUPS.flatMap(g=>g[1]);
+// Gêneros em famílias, cada uma com uma cor; GENRES segue essa ordem.
+const GENRE_GROUPS=[
+ ['#2f6fd6',['Rock','Rock alternativo','Rock nacional','Indie','Hard rock','Metal','Punk']],
+ ['#e8892f',['Pop','Pop rock','Eletrônica']],
+ ['#e0604a',['MPB','Samba','Pagode','Bossa nova']],
+ ['#c9922a',['Sertanejo','Forró','Folk / Country']],
+ ['#7b4fc9',['Rap / Hip hop','Funk','R&B / Soul','Reggae']],
+ ['#1f9a8a',['Jazz','Blues','Gospel']]];
+const GENRES=GENRE_GROUPS.flatMap(g=>g[1]);
+const GCOL=Object.fromEntries(GENRE_GROUPS.flatMap(([c,gs])=>gs.map(g=>[g,c])));
 const DAYS=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'], PER=['Manhã','Tarde','Noite'];
 const LEVELS=[{label:'Acabei de começar',short:'Começando'},{label:'Consigo tocar músicas simples',short:'Básico'},{label:'Consigo tocar qualquer música desde que eu tenha tempo',short:'Intermediário'},{label:'Já pego todas as músicas',short:'Avançado'}];
 const LVI=s=>LEVELS.findIndex(l=>l.short===s);
+const LCOL=['#2f9e5a','#e8892f','#d64545','#7b4fc9']; // Começando, Básico, Intermediário, Avançado
 const SG='Apresentação de vez em quando';
 const GOALS=[{label:'Hobby',desc:'Tocar por diversão, sem compromisso de show'},{label:SG,desc:'Ex.: um show por semestre, cerca de 4 músicas'},{label:'Tocar fora',desc:'Repertório longo, ensaios extras, shows'}];
 const BANDS=[
@@ -16,11 +28,12 @@ const STATUS={pending:{l:'Pendente',bg:'#f6ecd2',fg:'#7a5a12'},chatting:{l:'Em c
 const TEST={fio:{w:'Qui, 15 out · 19h–21h',m:'Oi Lucas! Curtimos seu perfil. Bora fazer um ensaio teste na quinta? Pensamos em Do I Wanna Know, Equalize e Last Nite.'},dom:{w:'Sáb, 17 out · 10h–12h',m:'Oi Lucas, bem-vindo! Sábado de manhã funciona pra um ensaio teste?'},vol:{w:'Sex, 16 out · 20h–23h',m:'Fala Lucas! Sexta tem ensaio no estúdio, cola lá pra testar.'}};
 const G22={id:'g22',slots:['Ter-Noite'],name:'Garagem 22',role:'owner',genres:'Rock alternativo · Indie',goal:'Apresentação de vez em quando',when:'Ter · 19h–21h',where:'Sala 2 · Escola',vagas:['Bateria','Voz'],
   members:[{i:'LM',n:'Lucas Martins (você)',r:'Guitarra',lvl:'Intermediário',tag:'Líder'}],
-  reqs:[{id:'mt',chat:[],i:'MP',n:'Mateus Prado',r:'Bateria',lvl:'Intermediário',insts:[['Bateria','Intermediário'],['Percussão','Básico']],goal:SG,genres:['Rock alternativo','Indie','Punk'],avail:['Ter-Noite','Qui-Noite','Sáb-Tarde'],city:'São Paulo, SP',first:'Valeu por aceitar! Terça às 19h funciona pra mim.',status:'pending'},{id:'ju',chat:[],i:'JR',n:'Júlia Reis',r:'Voz',lvl:'Básico',insts:[['Voz','Básico']],goal:'Hobby',genres:['Pop','Rock nacional','MPB'],avail:['Ter-Noite','Sex-Noite'],city:'São Paulo, SP',first:'Oba! Posso levar a letra de Admirável Chip Novo?',status:'pending'}],
+  reqs:[{id:'mt',chat:[],i:'MP',n:'Mateus Prado',r:'Bateria',lvl:'Intermediário',insts:[['Bateria','Intermediário'],['Percussão','Básico']],goal:SG,genres:['Rock alternativo','Indie','Punk'],avail:['Ter-Noite','Qui-Noite','Sáb-Tarde'],city:'Joinville, SC',first:'Valeu por aceitar! Terça às 19h funciona pra mim.',status:'pending'},{id:'ju',chat:[],i:'JR',n:'Júlia Reis',r:'Voz',lvl:'Básico',insts:[['Voz','Básico']],goal:'Hobby',genres:['Pop','Rock nacional','MPB'],avail:['Ter-Noite','Sex-Noite'],city:'Jaraguá do Sul, SC',first:'Oba! Posso levar a letra de Admirável Chip Novo?',status:'pending'}],
   rep:[{t:'Everlong',a:'Foo Fighters'},{t:'Reptilia',a:'The Strokes'},{t:'Admirável Chip Novo',a:'Pitty'}],
   reh:{label:'PRÓXIMO ENSAIO',when:'Ter, 13 out · 19h–21h',where:'Sala 2 · Escola',confirmed:true},
   msgs:[{sys:true,t:'Banda criada. Quando alguém entrar, a conversa aparece aqui.'}]};
-const CITIES=[['São Paulo','SP'],['Santo André','SP'],['São Bernardo do Campo','SP'],['São Caetano do Sul','SP'],['Guarulhos','SP'],['Osasco','SP'],['Campinas','SP'],['Santos','SP'],['Sorocaba','SP'],['Ribeirão Preto','SP'],['São José dos Campos','SP'],['Jundiaí','SP'],['Rio de Janeiro','RJ'],['Niterói','RJ'],['Belo Horizonte','MG'],['Uberlândia','MG'],['Curitiba','PR'],['Londrina','PR'],['Porto Alegre','RS'],['Florianópolis','SC'],['Joinville','SC'],['Salvador','BA'],['Recife','PE'],['Fortaleza','CE'],['Brasília','DF'],['Goiânia','GO'],['Manaus','AM'],['Belém','PA'],['Vitória','ES'],['Natal','RN']];
+// Joinville e região (norte de SC), mais as cidades vizinhas do Paraná.
+const CITIES=[['Joinville','SC'],['Jaraguá do Sul','SC'],['Araquari','SC'],['Guaramirim','SC'],['São Francisco do Sul','SC'],['Garuva','SC'],['Itapoá','SC'],['Barra Velha','SC'],['Balneário Barra do Sul','SC'],['Balneário Piçarras','SC'],['Penha','SC'],['Schroeder','SC'],['Massaranduba','SC'],['Corupá','SC'],['São Bento do Sul','SC'],['Campo Alegre','SC'],['Rio Negrinho','SC'],['Pomerode','SC'],['Blumenau','SC'],['Navegantes','SC'],['Itajaí','SC'],['Balneário Camboriú','SC'],['Guaratuba','PR'],['Curitiba','PR']];
 const GENRE_EXTRA=['Reggae','Samba','Samba rock','Pagode','Sertanejo','Forró','Axé','Bossa nova','Choro','Rap','Hip hop','Trap','R&B','Soul','Jazz','Gospel','Punk','Hardcore','Grunge','Emo','Hard rock','Rock progressivo','Heavy metal','Thrash metal','Country','Folk','Eletrônica','Lo-fi','Música clássica','Indie folk','Pop rock','Ska','Disco','Funk carioca','Psicodelia','Shoegaze','Post-rock','Brega','Piseiro','Frevo','Baião','MPB alternativa'];
 const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 const lev=(a,b)=>{const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length];};
@@ -44,7 +57,7 @@ const chip=(label,on,onClick)=>({label,onClick,bg:on?INK:'#fff',fg:on?'#f7f5f0':
 
 class Component extends DCLogic {
   state={screen:'login',emailNotif:true,authMode:'login',lName:'',lEmail:'',lPass:'',showPass:false,authErr:'',userName:'Lucas Martins',userEmail:'lucas.martins@email.com',step:0,tab:'search',searchView:'list',searchSub:'match',bandsView:'band',myBandId:'g22',
-    insts:[{id:1,name:'Guitarra',custom:'',level:'Intermediário'}],openInst:null,otherGenre:'',customGenres:[],genreFocus:false,genreIdx:0,city:'São Paulo, SP',cityQuery:'São Paulo, SP',cityFocus:false,cityIdx:0,
+    insts:[{id:1,name:'Guitarra',custom:'',level:'Intermediário'}],openInst:null,otherGenre:'',customGenres:[],genreFocus:false,genreIdx:0,city:'Joinville, SC',cityQuery:'Joinville, SC',cityFocus:false,cityIdx:0,
     dismissed:[],genres:['Rock alternativo','Indie','Rock nacional'],goal:SG,avail:{'Ter-Noite':1,'Qui-Noite':1,'Sáb-Manhã':1},fTime:false,fLvl:false,fGoals:[],fGenres:[],filtersOpen:false,bandQuery:'',bandId:'fio',
     sent:[{bandId:'dom',status:'pending',date:'5 out',chat:[]}],myBands:[G22],
     cName:'',cVagas:['Bateria'],cGoal:null,cGoalText:'',cAvail:{},cRep:[],cInst:'Guitarra',cAdd:null,draft:''};
@@ -100,9 +113,14 @@ class Component extends DCLogic {
       return {num:i+1,ico:ico(it.name||'Outro',INK),collapsed:!exp,expanded:exp,displayName:dn||'Novo instrumento',levelText:lv?lv.label:'Nível não informado',canRemove:insts.length>1,
         remove:()=>this.setState(s=>({insts:s.insts.filter(x=>x.id!==it.id),openInst:s.openInst===it.id?null:s.openInst})),
         edit:()=>this.setState(s=>({openInst:it.id,insts:s.insts.filter(x=>x.id===it.id||(x.name&&x.level))})),
-        chips:INSTR.map(n=>{const on=it.name===n,dis=!on&&insts.some(x=>x.name===n);return {label:n,ico:ico(n,on?'#f7f5f0':INK),onClick:()=>{if(!dis)upd(it.id,{name:n});},bg:on?INK:'#fff',fg:on?'#f7f5f0':INK,bd:on?INK:LINE,op:dis?.35:1};}),
+        groups:INST_GROUPS.map(([label,names])=>({label:label.toUpperCase(),chips:names.map(n=>{const on=it.name===n,dis=!on&&insts.some(x=>x.name===n);return {label:n,ico:ico(n,on?'#f7f5f0':INK),onClick:()=>{if(dis)return;upd(it.id,{name:n,level:it.name===n?it.level:null});this.setState({instPicking:null});},bg:on?INK:'#fff',fg:on?'#f7f5f0':INK,bd:on?INK:LINE,op:dis?.35:1};})})),
+        picking:!it.name||st.instPicking===it.id,showLevel:!!it.name&&st.instPicking!==it.id,changeInst:()=>this.setState({instPicking:it.id}),
         isOther:it.name==='Outro',custom:it.custom,onCustom:e=>upd(it.id,{custom:e.target.value}),hasName:!!it.name,
-        levels:LEVELS.map(l=>({label:l.label,shortUpper:l.short.toUpperCase(),bd:it.level===l.short?INK:'#e6e2da',bg:it.level===l.short?'#f3efe8':'#fff',onClick:()=>upd(it.id,{level:l.short})})),
+        lvColor:lv?LCOL[LVI(it.level)]:'#8f897f',lvShort:lv?lv.short:'Sem nível',
+        slider:(()=>{const k=LVI(it.level),has=k>=0,pct=has?k/3*100:0,color=has?LCOL[k]:'#b9b2a6';return {pct,color,val:has?k:0,
+          balloon:has?LEVELS[k].label:'Arraste o pino ou toque no seu nível',name:has?LEVELS[k].short:'Escolha seu nível',
+          onRange:e=>upd(it.id,{level:LEVELS[+e.target.value].short}),
+          ticks:LEVELS.map((l,j)=>({label:l.short,left:j/3*100+'%',tx:j===0?'0':j===3?'-100%':'-50%',dot:has&&j<=k?color:'#ddd8ce',color:j===k?LCOL[j]:'#8f897f',fw:j===k?700:500,onClick:()=>upd(it.id,{level:l.short})}))};})(),
         done:()=>{if(ready)this.setState({openInst:null});},doneBg:ready?INK:'#d9d3c8'};});
     const gq=norm(st.otherGenre);
     const taken=new Set([...GENRES,...st.customGenres].map(norm));
@@ -216,14 +234,14 @@ class Component extends DCLogic {
       hasAuthErr:!!st.authErr,authErr:st.authErr,userName:st.userName,userEmail:st.userEmail,
       logout:()=>this.go('login'),
       notifBg:st.emailNotif?OK:'#d9d3c8',notifJc:st.emailNotif?'flex-end':'flex-start',toggleEmailNotif:()=>this.setState(s=>({emailNotif:!s.emailNotif})),
-      onbSteps:['Boas-vindas','Instrumento e nível','Estilo e objetivo','Disponibilidade e cidade'].map((label,i)=>({n:i+1,label,bg:i<st.step?OK:i===st.step?INK:'transparent',fg:i<=st.step?'#fff':'#6b665e',bd:i<st.step?OK:i===st.step?INK:'#c9c2b5',fw:i===st.step?700:500,tc:i<=st.step?INK:'#6b665e'})),
+      onbSteps:['Boas-vindas','Instrumento e nível','Estilos','Horários, objetivo e local'].map((label,i)=>({n:i+1,label,bg:i<st.step?OK:i===st.step?INK:'transparent',fg:i<=st.step?'#fff':'#6b665e',bd:i<st.step?OK:i===st.step?INK:'#c9c2b5',fw:i===st.step?700:500,tc:i<=st.step?INK:'#6b665e'})),
       isStep0:st.step===0,isStep1:st.step===1,isStep2:st.step===2,isStep3:st.step===3,
       showBack:st.step>0||st.editing,nextLabel:st.editing?'Salvar':st.step===0?'Criar meu perfil':st.step===3?'Ver bandas compatíveis':'Continuar',
       prevStep:()=>st.editing?this.setState({screen:'app',tab:'profile',editing:false}):this.setState(s=>({step:Math.max(0,s.step-1)})),
       nextStep:()=>st.editing?this.setState({screen:'app',tab:'profile',editing:false}):st.step<3?this.setState({step:st.step+1}):this.go('search'),
       instCards,canAddInst:!openItem||!!(openItem.name&&openItem.level),
       addInst:()=>{const id=Date.now();this.setState(s=>({insts:[...s.insts.filter(x=>x.name&&x.level),{id,name:null,custom:'',level:null}],openInst:id}));},
-      genreChips:GENRES.map(g=>chip(g,st.genres.includes(g),()=>toggleArr('genres',g))),
+      genreChips:GENRES.map(g=>{const on=st.genres.includes(g),c=GCOL[g];return {label:g,onClick:()=>toggleArr('genres',g),bg:on?c:'#fff',fg:on?'#fff':INK,bd:on?c:c+'55',dot:on?'#fff':c};}),
       showOtherGenre:st.genres.includes('Outro'),otherGenre:st.otherGenre,
       onOtherGenre:e=>this.setState({otherGenre:e.target.value,genreFocus:true,genreIdx:0}),
       onGenreFocus:()=>this.setState({genreFocus:true}),onGenreBlur:()=>this.setState({genreFocus:false}),
@@ -247,7 +265,7 @@ class Component extends DCLogic {
       instrumentsText:instruments.join(' + ')||'Sem instrumento',
       profInsts:done.map(x=>{const n=this.instName(x);return {name:n,level:x.level,ico:ico(n,INK)};}),instEdit:()=>this.setState({screen:'onb',step:1,editing:true}),
       availOpen:!!st.availOpen,availRot:st.availOpen?'180deg':'0deg',toggleAvail:()=>this.setState(s=>({availOpen:!s.availOpen})),availCount:slots.length?slots.length+' horários por semana':'Nenhum horário marcado',
-      profileRows:[['flag','Objetivo',st.goal,2],['library_music','Gêneros',[...st.genres.filter(x=>x!=='Outro'),...st.customGenres].join(', ')||'—',2],['location_on','Cidade',st.city||'—',3]].map(([icon,label,value,step])=>({icon,label,value,edit:()=>this.setState({screen:'onb',step,editing:true})})),
+      profileRows:[['flag','Objetivo',st.goal,3],['library_music','Gêneros',[...st.genres.filter(x=>x!=='Outro'),...st.customGenres].join(', ')||'—',2],['location_on','Cidade',st.city||'—',3]].map(([icon,label,value,step])=>({icon,label,value,edit:()=>this.setState({screen:'onb',step,editing:true})})),
 
       calHead:['',...DAYS],isSearchList:st.searchView==='list',isDetail:st.searchView==='detail',isMatchSub:st.searchSub==='match',isSentSub:st.searchSub==='sent',
       searchSubs:[['match','Compatíveis',shown.length],['sent','Solicitações enviadas',st.sent.length],['chats','Conversas',sentChats.length]].map(([k,label,n])=>({label,n,...seg(st.searchSub===k),onClick:()=>this.setState({searchSub:k})})),

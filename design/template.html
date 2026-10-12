@@ -95,7 +95,7 @@
                       <span style="width:44px;height:44px;border-radius:22px;background:#efe9df;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:24px;height:24px;display:block;flex:none;background:center / contain no-repeat url({{ ic.ico }})"></span></span>
                       <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
                         <span style="font-size:16px;font-weight:600">{{ ic.displayName }}</span>
-                        <span style="font-size:13px;color:#6b665e">{{ ic.levelText }}</span>
+                        <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:{{ ic.lvColor }}"><span style="width:8px;height:8px;border-radius:4px;background:{{ ic.lvColor }}"></span>{{ ic.lvShort }}</span>
                       </span>
                       <button sc-camel-on-click="{{ ic.edit }}" style="height:34px;padding:0 14px;border-radius:17px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:13px;font-weight:600">Editar</button>
                       <sc-if value="{{ ic.canRemove }}" hint-placeholder-val="{{ false }}">
@@ -111,23 +111,38 @@
                           <button sc-camel-on-click="{{ ic.remove }}" style="display:flex;align-items:center;gap:4px;height:30px;padding:0 10px;border-radius:15px;border:none;background:transparent;color:#6b665e;font-size:13px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px">delete</span>Remover</button>
                         </sc-if>
                       </div>
-                      <div style="display:flex;flex-direction:column;gap:10px">
-                        <span style="font-size:14px;font-weight:600;color:#4a463f">Qual instrumento? <span style="color:#b4502e">*</span></span>
-                        <div style="display:flex;flex-wrap:wrap;gap:8px">
-                          <sc-for list="{{ ic.chips }}" as="c" hint-placeholder-count="6"><button sc-camel-on-click="{{ c.onClick }}" style="display:flex;align-items:center;gap:8px;height:44px;padding:0 18px 0 12px;border-radius:22px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};opacity:{{ c.op }};font-size:15px;font-weight:500"><span style="width:22px;height:22px;display:block;flex:none;background:center / contain no-repeat url({{ c.ico }})"></span>{{ c.label }}</button></sc-for>
+                      <sc-if value="{{ ic.picking }}" hint-placeholder-val="{{ true }}">
+                        <div style="display:flex;flex-direction:column;gap:14px">
+                          <span style="font-size:14px;font-weight:600;color:#4a463f">Qual instrumento? <span style="color:#b4502e">*</span></span>
+                          <sc-for list="{{ ic.groups }}" as="g" hint-placeholder-count="3">
+                            <div style="display:flex;flex-direction:column;gap:8px">
+                              <span style="font:700 11px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#8a847a">{{ g.label }}</span>
+                              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                                <sc-for list="{{ g.chips }}" as="c" hint-placeholder-count="3"><button sc-camel-on-click="{{ c.onClick }}" style="display:flex;align-items:center;gap:8px;height:42px;padding:0 16px 0 12px;border-radius:21px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};opacity:{{ c.op }};font-size:15px;font-weight:500"><span style="width:20px;height:20px;display:block;flex:none;background:center / contain no-repeat url({{ c.ico }})"></span>{{ c.label }}</button></sc-for>
+                              </div>
+                            </div>
+                          </sc-for>
                         </div>
-                        
-                      </div>
-                      <sc-if value="{{ ic.hasName }}" hint-placeholder-val="{{ false }}">
-                        <div style="display:flex;flex-direction:column;gap:10px">
+                      </sc-if>
+                      <sc-if value="{{ ic.showLevel }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;flex-direction:column;gap:18px">
+                          <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:#f7f5f0">
+                            <span style="width:40px;height:40px;border-radius:20px;background:#fff;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:22px;height:22px;display:block;background:center / contain no-repeat url({{ ic.ico }})"></span></span>
+                            <span style="flex:1;font-size:16px;font-weight:600">{{ ic.displayName }}</span>
+                            <button sc-camel-on-click="{{ ic.changeInst }}" style="padding:0 6px;border:none;background:transparent;color:#b4502e;font-size:14px;font-weight:600">Trocar</button>
+                          </div>
                           <span style="font-size:14px;font-weight:600;color:#4a463f">Seu nível em {{ ic.displayName }} hoje <span style="color:#b4502e">*</span></span>
-                          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">
-                            <sc-for list="{{ ic.levels }}" as="l" hint-placeholder-count="4">
-                              <button sc-camel-on-click="{{ l.onClick }}" style="display:flex;flex-direction:column;gap:8px;text-align:left;padding:14px 16px;border-radius:14px;border:1.5px solid {{ l.bd }};background:{{ l.bg }};color:#1d1b18">
-                                <span style="font:700 11px 'JetBrains Mono',monospace;letter-spacing:.06em;color:#6b665e">{{ l.shortUpper }}</span>
-                                <span style="font-size:15px;font-weight:600;line-height:1.35">{{ l.label }}</span>
-                              </button>
-                            </sc-for>
+                          <div style="padding:0 14px">
+                            <div style="position:relative;height:128px">
+                              <div style="position:absolute;bottom:66px;left:{{ ic.slider.pct }}%;transform:translateX(-{{ ic.slider.pct }}%);width:max-content;max-width:min(280px,100%);padding:10px 14px;border-radius:14px;background:{{ ic.slider.color }};color:#fff;font-size:14px;font-weight:600;line-height:1.35;transition:left .2s,transform .2s,background .2s">{{ ic.slider.balloon }}</div>
+                              <span style="position:absolute;bottom:52px;left:{{ ic.slider.pct }}%;margin-left:-8px;width:0;height:0;border:8px solid transparent;border-top-color:{{ ic.slider.color }};transition:left .2s,border-color .2s"></span>
+                              <span style="position:absolute;bottom:32px;left:0;right:0;height:6px;border-radius:3px;background:#e6e2da"></span>
+                              <span style="position:absolute;bottom:32px;left:0;width:{{ ic.slider.pct }}%;height:6px;border-radius:3px;background:{{ ic.slider.color }};transition:width .2s,background .2s"></span>
+                              <sc-for list="{{ ic.slider.ticks }}" as="t" hint-placeholder-count="4"><span style="position:absolute;bottom:29px;left:{{ t.left }};margin-left:-6px;width:12px;height:12px;border-radius:6px;background:{{ t.dot }}"></span></sc-for>
+                              <span style="position:absolute;bottom:21px;left:{{ ic.slider.pct }}%;margin-left:-14px;width:28px;height:28px;box-sizing:border-box;border-radius:14px;background:#fff;border:4px solid {{ ic.slider.color }};box-shadow:0 2px 6px rgba(29,27,24,.25);pointer-events:none;transition:left .2s,border-color .2s"></span>
+                              <input type="range" min="0" max="3" step="1" value="{{ ic.slider.val }}" sc-camel-on-change="{{ ic.slider.onRange }}" aria-label="Nível" style="position:absolute;bottom:16px;left:-14px;width:calc(100% + 28px);height:40px;margin:0;opacity:0;cursor:pointer">
+                              <span style="position:absolute;bottom:0;left:{{ ic.slider.pct }}%;transform:translateX(-{{ ic.slider.pct }}%);color:{{ ic.slider.color }};font-size:14px;font-weight:700;white-space:nowrap;transition:left .2s,transform .2s">{{ ic.slider.name }}</span>
+                            </div>
                           </div>
                         </div>
                       </sc-if>
@@ -148,24 +163,15 @@
 
           <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;flex-direction:column;gap:28px">
-              <h2 style="margin:0;font:700 36px/1.08 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">O que você quer tocar?</h2>
-              <div style="display:flex;flex-direction:column;gap:12px">
-                <span style="font-size:14px;font-weight:600;color:#4a463f">Gêneros</span>
-                <div style="display:flex;flex-wrap:wrap;gap:8px">
-                  <sc-for list="{{ genreChips }}" as="c" hint-placeholder-count="9"><button sc-camel-on-click="{{ c.onClick }}" style="height:42px;padding:0 16px;border-radius:21px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};font-size:14px;font-weight:500">{{ c.label }}</button></sc-for>
-                </div>
-                
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <h2 style="margin:0;font:700 36px/1.08 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">O que você quer tocar?</h2>
+                <p style="margin:0;font-size:15px;color:#4a463f">Escolha os estilos que você curte. Cores parecidas são estilos próximos.</p>
               </div>
               <div style="display:flex;flex-direction:column;gap:12px">
-                <span style="font-size:14px;font-weight:600;color:#4a463f">Objetivo</span>
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px">
-                  <sc-for list="{{ goalOpts }}" as="l" hint-placeholder-count="3">
-                    <button sc-camel-on-click="{{ l.onClick }}" style="display:flex;flex-direction:column;gap:6px;text-align:left;padding:16px 18px;border-radius:14px;border:1.5px solid {{ l.bd }};background:#fff;color:#1d1b18">
-                      <span style="font-size:15px;font-weight:600">{{ l.label }}</span>
-                      <span style="font-size:13px;line-height:1.4;color:#6b665e">{{ l.desc }}</span>
-                    </button>
-                  </sc-for>
+                <div style="display:flex;flex-wrap:wrap;gap:10px">
+                  <sc-for list="{{ genreChips }}" as="c" hint-placeholder-count="9"><button sc-camel-on-click="{{ c.onClick }}" style="display:flex;align-items:center;gap:8px;height:50px;padding:0 20px 0 16px;border-radius:25px;border:1.5px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};font-size:16px;font-weight:600;transition:background .15s"><span style="width:10px;height:10px;border-radius:5px;background:{{ c.dot }};flex:none"></span>{{ c.label }}</button></sc-for>
                 </div>
+                
               </div>
             </div>
           </sc-if>
@@ -173,7 +179,7 @@
           <sc-if value="{{ isStep3 }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;flex-direction:column;gap:24px">
               <div style="display:flex;flex-direction:column;gap:8px">
-                <h2 style="margin:0;font:700 36px/1.08 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">Quando você pode ensaiar?</h2>
+                <h2 style="margin:0;font:700 36px/1.08 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">Quando você pode tocar?</h2>
                 <p style="margin:0;font-size:15px;color:#4a463f">É o critério que mais pesa no match. Clique nos horários livres.</p>
               </div>
               <div style="display:grid;grid-template-columns:72px repeat(7,minmax(0,1fr));gap:6px;align-items:center">
@@ -184,8 +190,19 @@
                 </sc-for>
               </div>
               <div style="font-size:14px;color:#6b665e">{{ availSummary }}</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <span style="font-size:14px;font-weight:600;color:#4a463f">Qual o seu objetivo?</span>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px">
+                  <sc-for list="{{ goalOpts }}" as="l" hint-placeholder-count="3">
+                    <button sc-camel-on-click="{{ l.onClick }}" style="display:flex;flex-direction:column;gap:6px;text-align:left;padding:16px 18px;border-radius:14px;border:1.5px solid {{ l.bd }};background:#fff;color:#1d1b18">
+                      <span style="font-size:15px;font-weight:600">{{ l.label }}</span>
+                      <span style="font-size:13px;line-height:1.4;color:#6b665e">{{ l.desc }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
               <div style="display:flex;flex-direction:column;gap:8px;max-width:360px">
-                <span style="font-size:14px;font-weight:600;color:#4a463f">Cidade</span>
+                <span style="font-size:14px;font-weight:600;color:#4a463f">Onde você quer tocar?</span>
                 <div style="position:relative">
                   <span style="position:absolute;left:12px;top:14px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6b665e;pointer-events:none">location_on</span>
                   <input value="{{ cityQuery }}" sc-camel-on-change="{{ onCityInput }}" sc-camel-on-focus="{{ onCityFocus }}" sc-camel-on-blur="{{ onCityBlur }}" sc-camel-on-key-down="{{ onCityKey }}" placeholder="Comece a digitar sua cidade" sc-camel-auto-complete="off" style="width:100%;box-sizing:border-box;height:48px;border-radius:12px;border:1px solid {{ cityBd }};background:#fff;padding:0 14px 0 40px;font-size:15px;color:#1d1b18;outline:none">
