@@ -11,13 +11,12 @@ const BANDS=[
  {id:'dom',name:'Domingo Cedo',goal:SG,when:'Sáb · 10h–12h',slot:'Sáb-Manhã',where:'Sala 1 · Escola',vaga:'Guitarra',genres:'MPB · Indie folk',rep:[{t:'Trem-Bala',a:'Ana Vilela'},{t:'Velha Infância',a:'Tribalistas'},{t:'Ho Hey',a:'The Lumineers'}],members:[{i:'CM',n:'Carol Melo',r:'Voz',lvl:'Intermediário',lead:true},{i:'TH',n:'Thiago Reis',r:'Teclado',lvl:'Avançado'}],rp:60,req:'Básico'},
  {id:'vol',name:'Volume 7',goal:'Tocar fora',when:'Sex · 20h–23h',slot:'Sex-Noite',where:'Estúdio externo',vaga:'Guitarra',genres:'Hard rock · Metal',rep:[{t:'Enter Sandman',a:'Metallica'},{t:'Roots Bloody Roots',a:'Sepultura'},{t:'Back in Black',a:'AC/DC'}],members:[{i:'GF',n:'Gui Faria',r:'Voz',lvl:'Avançado',lead:true},{i:'DN',n:'Duda Nunes',r:'Baixo',lvl:'Avançado'},{i:'PK',n:'Pedro Kim',r:'Bateria',lvl:'Avançado'}],rp:60,req:'Avançado'}
 ];
-const LEAD_PHONE={fio:'(11) 99654-2210',dom:'(11) 98120-4476',vol:'(11) 97342-8813'};
 const NAV=[['login','Login'],['onb','Cadastro'],['profile','Meu perfil'],['search','Procurar bandas'],['detail','Detalhe da banda'],['sent','Solicitações enviadas'],['bands','Minhas bandas'],['create','Criar banda']];
-const STATUS={pending:{l:'Pendente',bg:'#f6ecd2',fg:'#7a5a12'},testing:{l:'Em teste',bg:'#e4e0ea',fg:'#4b3f72'},accepted:{l:'Aceita',bg:'#e3efe6',fg:'#2f6b45'},declined:{l:'Recusada',bg:'#efebe4',fg:'#6b665e'}};
+const STATUS={pending:{l:'Pendente',bg:'#f6ecd2',fg:'#7a5a12'},chatting:{l:'Em conversa',bg:'#e4e0ea',fg:'#4b3f72'},accepted:{l:'Aceita',bg:'#e3efe6',fg:'#2f6b45'},declined:{l:'Recusada',bg:'#efebe4',fg:'#6b665e'}};
 const TEST={fio:{w:'Qui, 15 out · 19h–21h',m:'Oi Lucas! Curtimos seu perfil. Bora fazer um ensaio teste na quinta? Pensamos em Do I Wanna Know, Equalize e Last Nite.'},dom:{w:'Sáb, 17 out · 10h–12h',m:'Oi Lucas, bem-vindo! Sábado de manhã funciona pra um ensaio teste?'},vol:{w:'Sex, 16 out · 20h–23h',m:'Fala Lucas! Sexta tem ensaio no estúdio, cola lá pra testar.'}};
 const G22={id:'g22',slots:['Ter-Noite'],name:'Garagem 22',role:'owner',genres:'Rock alternativo · Indie',goal:'Apresentação de vez em quando',when:'Ter · 19h–21h',where:'Sala 2 · Escola',vagas:['Bateria','Voz'],
   members:[{i:'LM',n:'Lucas Martins (você)',r:'Guitarra',lvl:'Intermediário',tag:'Líder'}],
-  reqs:[{id:'mt',phone:'(11) 98412-3307',test:null,i:'MP',n:'Mateus Prado',r:'Bateria',lvl:'Intermediário',insts:[['Bateria','Intermediário'],['Percussão','Básico']],goal:SG,genres:['Rock alternativo','Indie','Punk'],avail:['Ter-Noite','Qui-Noite','Sáb-Tarde'],city:'São Paulo, SP',first:'Valeu por aceitar! Terça às 19h funciona pra mim.',status:'pending'},{id:'ju',phone:'(11) 97730-5521',test:null,i:'JR',n:'Júlia Reis',r:'Voz',lvl:'Básico',insts:[['Voz','Básico']],goal:'Hobby',genres:['Pop','Rock nacional','MPB'],avail:['Ter-Noite','Sex-Noite'],city:'São Paulo, SP',first:'Oba! Posso levar a letra de Admirável Chip Novo?',status:'pending'}],
+  reqs:[{id:'mt',chat:[],i:'MP',n:'Mateus Prado',r:'Bateria',lvl:'Intermediário',insts:[['Bateria','Intermediário'],['Percussão','Básico']],goal:SG,genres:['Rock alternativo','Indie','Punk'],avail:['Ter-Noite','Qui-Noite','Sáb-Tarde'],city:'São Paulo, SP',first:'Valeu por aceitar! Terça às 19h funciona pra mim.',status:'pending'},{id:'ju',chat:[],i:'JR',n:'Júlia Reis',r:'Voz',lvl:'Básico',insts:[['Voz','Básico']],goal:'Hobby',genres:['Pop','Rock nacional','MPB'],avail:['Ter-Noite','Sex-Noite'],city:'São Paulo, SP',first:'Oba! Posso levar a letra de Admirável Chip Novo?',status:'pending'}],
   rep:[{t:'Everlong',a:'Foo Fighters'},{t:'Reptilia',a:'The Strokes'},{t:'Admirável Chip Novo',a:'Pitty'}],
   reh:{label:'PRÓXIMO ENSAIO',when:'Ter, 13 out · 19h–21h',where:'Sala 2 · Escola',confirmed:true},
   msgs:[{sys:true,t:'Banda criada. Quando alguém entrar, a conversa aparece aqui.'}]};
@@ -40,17 +39,14 @@ const dropOne=(a,v)=>{const i=a.lastIndexOf(v);return i<0?a:a.filter((_,j)=>j!==
 const vagaSummary=a=>{if(!a.length)return 'Nenhuma vaga aberta';const c={};a.forEach(v=>c[v]=(c[v]||0)+1);const n=a.length;return n+(n>1?' vagas: ':' vaga: ')+Object.entries(c).map(([v,k])=>(k>1?k+'× ':'')+v).join(', ');};
 // Chips de vaga com contador: toque adiciona; − e + ajustam quantas vagas daquele instrumento.
 const vagaChipsFor=(list,update)=>INSTR.map(n=>{const k=list.filter(x=>x===n).length;return {label:n,ico:ico(n,k?'#f7f5f0':INK),off:!k,on:!!k,n:k,add:()=>update(a=>[...a,n]),sub:()=>update(a=>dropOne(a,n))};});
-const MONTHS=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-// "2026-10-14" + "19:00" -> "Qua, 14 out · 19:00"
-const fmtTest=t=>{if(!t||!t.date)return '';const d=new Date(t.date+'T12:00');return DAYS[(d.getDay()+6)%7]+', '+d.getDate()+' '+MONTHS[d.getMonth()]+(t.time?' · '+t.time:'');};
 const mc=v=>v>=85?OK:v>=65?'#8a6a1f':ACC;
 const chip=(label,on,onClick)=>({label,onClick,bg:on?INK:'#fff',fg:on?'#f7f5f0':INK,bd:on?INK:LINE});
 
 class Component extends DCLogic {
-  state={screen:'login',authMode:'login',lName:'',lEmail:'',lPass:'',showPass:false,authErr:'',userName:'Lucas Martins',userEmail:'lucas.martins@email.com',step:0,tab:'search',searchView:'list',searchSub:'match',bandsView:'band',myBandId:'g22',
+  state={screen:'login',emailNotif:true,authMode:'login',lName:'',lEmail:'',lPass:'',showPass:false,authErr:'',userName:'Lucas Martins',userEmail:'lucas.martins@email.com',step:0,tab:'search',searchView:'list',searchSub:'match',bandsView:'band',myBandId:'g22',
     insts:[{id:1,name:'Guitarra',custom:'',level:'Intermediário'}],openInst:null,otherGenre:'',customGenres:[],genreFocus:false,genreIdx:0,city:'São Paulo, SP',cityQuery:'São Paulo, SP',cityFocus:false,cityIdx:0,
-    dismissed:[],genres:['Rock alternativo','Indie','Rock nacional'],goal:SG,avail:{'Ter-Noite':1,'Qui-Noite':1,'Sáb-Manhã':1},fTime:true,fGoal:false,fLvl:false,bandId:'fio',
-    sent:[{bandId:'dom',status:'pending',date:'5 out'}],myBands:[G22],
+    dismissed:[],genres:['Rock alternativo','Indie','Rock nacional'],goal:SG,avail:{'Ter-Noite':1,'Qui-Noite':1,'Sáb-Manhã':1},fTime:false,fLvl:false,fGoals:[],fGenres:[],filtersOpen:false,bandQuery:'',bandId:'fio',
+    sent:[{bandId:'dom',status:'pending',date:'5 out',chat:[]}],myBands:[G22],
     cName:'',cVagas:['Bateria'],cGoal:null,cGoalText:'',cAvail:{},cRep:[],cInst:'Guitarra',cAdd:null,draft:''};
   scrollRef=React.createRef();
   key(s){ if(s.screen==='login') return 'login'; if(s.screen==='onb') return 'onb'; if(s.tab==='profile') return 'profile'; if(s.tab==='search') return s.searchView==='detail'?'detail':s.searchSub==='sent'?'sent':'search'; return s.bandsView==='create'?'create':'bands'; }
@@ -118,7 +114,10 @@ class Component extends DCLogic {
     const genreSugs=genreList.map((g,i)=>({...g,bg:i===st.genreIdx?'#f3efe8':'transparent',pick:e=>{e.preventDefault();addGenre(g.value);}}));
     const toggleArr=(k,v)=>this.setState(s=>({[k]:s[k].includes(v)?s[k].filter(x=>x!==v):[...s[k],v]}));
     const all=BANDS.map(b=>this.bandCalc(b)).sort((a,b)=>b.match-a.match);
-    const shown=all.filter(b=>!st.dismissed.includes(b.id)&&(!st.fTime||b.h===100)&&(!st.fGoal||b.o===100)&&(!st.fLvl||b.req===this.lvlFor(b.vaga)));
+    const bq=norm(st.bandQuery||'');
+    const passF=b=>(!st.fTime||b.h===100)&&(!st.fLvl||b.req===this.lvlFor(b.vaga))&&(!st.fGoals.length||st.fGoals.includes(b.goal))&&(!st.fGenres.length||b.genres.split(' · ').some(g=>st.fGenres.includes(g)));
+    const shown=all.filter(b=>!st.dismissed.includes(b.id)&&passF(b)&&(!bq||norm(b.name+' '+b.genres).includes(bq)));
+    const nFilters=(st.fTime?1:0)+(st.fLvl?1:0)+st.fGoals.length+st.fGenres.length;
     const band=all.find(b=>b.id===st.bandId);
     const slots=Object.keys(st.avail).filter(k=>st.avail[k]);
     const q=norm(st.cityQuery===st.city?'':st.cityQuery);
@@ -130,7 +129,7 @@ class Component extends DCLogic {
     const TAG={'Líder':['#efe9df','#4a463f'],'Em teste':['#f6ecd2','#7a5a12']};
     const pendOwner=st.myBands.filter(b=>b.role==='owner').reduce((n,b)=>n+b.reqs.filter(r=>r.status==='pending').length,0);
     let mb={};
-    if(mbRaw){ const pr=mbRaw.reqs.filter(r=>r.status==='pending'||r.status==='testing');
+    if(mbRaw){ const pr=mbRaw.reqs.filter(r=>r.status==='pending'||r.status==='chatting');
       mb={...mbRaw,roleUpper:(mbRaw.role==='owner'?'VOCÊ CRIOU ESTA BANDA':mbRaw.role==='trial'?'VOCÊ ESTÁ EM ENSAIO TESTE':'VOCÊ É MEMBRO'),
         memberCount:mbRaw.members.length,memberNames:mbRaw.members.map(m=>m.n.replace(' (você)','').split(' ')[0]).join(', '),
         membersV:mbRaw.members.map(m=>{const self=m.n.includes('(você)');return {...m,ico:ico(m.r,INK),pic:pic(m.i),hasTag:!!m.tag,
@@ -145,16 +144,10 @@ class Component extends DCLogic {
           goalFit:r.goal===mbRaw.goal?'Mesmo objetivo da banda':'Banda: '+mbRaw.goal,goalFg:r.goal===mbRaw.goal?OK:'#7a5a12',
           timeFit:!bs.length?'A banda ainda não definiu horário':ov?'Livre no horário de ensaio da banda':'Não está livre no horário da banda',timeFg:!bs.length?'#6b665e':ov?OK:'#7a5a12',
           cal:PER.flatMap(p=>[{isLabel:true,isCell:false,label:p[0]},...DAYS.map(dd=>{const k=dd+'-'+p,b1=bs.includes(k),me=(r.avail||[]).includes(k);return {isLabel:false,isCell:true,bg:b1?INK:me?'#e3efe6':'#f3efe8',bd:b1?(me?'#7fc493':INK):me?'#9cc8a8':'#efebe4'};})]),
-          isPending:r.status==='pending',isTesting:r.status==='testing',showActions:r.status==='pending'&&st.schedFor!==r.id,
-          schedOpen:st.schedFor===r.id,schedDate:st.schedDate||'',schedTime:st.schedTime||'',
-          onSchedDate:e=>this.setState({schedDate:e.target.value}),onSchedTime:e=>this.setState({schedTime:e.target.value}),
-          openSched:()=>this.setState({schedFor:r.id,schedDate:r.test&&r.test.date||'',schedTime:r.test&&r.test.time||''}),cancelSched:()=>this.setState({schedFor:null}),
-          schedTitle:r.status==='pending'?'Chamar '+r.n.split(' ')[0]+' pra teste':'Data do teste',schedCta:r.status==='pending'?'Chamar pra teste':'Salvar data',
-          confirmSched:()=>{const d=st.schedDate;patchBand(mbRaw.id,b=>({...b,reqs:b.reqs.map(x=>x.id===r.id?{...x,status:'testing',test:d?{date:d,time:st.schedTime}:null}:x)}));this.setState({schedFor:null});},
-          hasTestDate:!!(r.test&&r.test.date),testText:r.test&&r.test.date?fmtTest(r.test):'Sem data marcada',schedLink:r.test&&r.test.date?'Remarcar':'Agendar',
-          vagaFull:r.status==='testing'&&!mbRaw.vagas.includes(r.r),canJoin:!mbRaw.vagas.includes(r.r)?false:true,
-          joinBg:mbRaw.vagas.includes(r.r)?'#e8774f':'#e6e2da',joinFg:mbRaw.vagas.includes(r.r)?'#1d1b18':'#8f897f',
-          fullText:'A vaga de '+r.r+' já foi preenchida.',
+          vagaOpen:mbRaw.vagas.includes(r.r),vagaFull:!mbRaw.vagas.includes(r.r),fullText:'A vaga de '+r.r+' já foi preenchida.',
+          acceptBg:mbRaw.vagas.includes(r.r)?'#e8774f':'#e6e2da',acceptFg:mbRaw.vagas.includes(r.r)?'#1d1b18':'#8f897f',
+          isChatting:r.status==='chatting',talkLabel:r.status==='chatting'?'Conversa':'Conversar',
+          talk:()=>{if(r.status!=='chatting')patchBand(mbRaw.id,b=>({...b,reqs:b.reqs.map(x=>x.id===r.id?{...x,status:'chatting',chat:[{sys:true,t:'Conversa privada com '+r.n.split(' ')[0]+'. Só vocês dois veem.'}]}:x)}));this.setState({lChatId:r.id});},
           decline:()=>patchBand(mbRaw.id,b=>({...b,reqs:b.reqs.map(x=>x.id===r.id?{...x,status:'declined'}:x)})),
           accept:()=>mbRaw.vagas.includes(r.r)&&patchBand(mbRaw.id,b=>({...b,reqs:b.reqs.map(x=>x.id===r.id?{...x,status:'accepted'}:x),vagas:dropOne(b.vagas,r.r),members:[...b.members,{i:r.i,n:r.n,r:r.r,lvl:r.lvl,tag:''}],msgs:[...b.msgs,{sys:true,t:r.n.split(' ')[0]+' entrou na banda.'},{a:r.n.split(' ')[0],i:r.i,t:r.first}]}))};}),
         cal:PER.flatMap(p=>[{isLabel:true,isCell:false,label:p[0]},...DAYS.map(dd=>{const k=dd+'-'+p,on=(mbRaw.slots||[]).includes(k);return {isLabel:false,isCell:true,bg:on?INK:'#f3efe8',bd:on?INK:'#efebe4'};})]),
@@ -182,6 +175,28 @@ class Component extends DCLogic {
       return {q,sugs,open:!!st[k+'F']&&sugs.length>0,
         onInput:e=>this.setState({[k+'Q']:e.target.value,[k+'F']:true,[k+'Idx']:0}),onFocus:()=>this.setState({[k+'F']:true}),onBlur:()=>this.setState({[k+'F']:false}),
         onKey:e=>{const n=list.length;if(e.key==='ArrowDown'){e.preventDefault();this.setState({[k+'Idx']:Math.min(n-1,idx+1)});}else if(e.key==='ArrowUp'){e.preventDefault();this.setState({[k+'Idx']:Math.max(0,idx-1)});}else if(e.key==='Enter'&&list[idx]){e.preventDefault();pickItem(list[idx]);}}};};
+    // Conversas privadas (líder <-> candidato) antes de aceitar alguém na banda.
+    const msgsV=(chat,other)=>chat.map(m=>({t:m.t,isSys:!!m.sys,isMine:!!m.mine,isOther:!m.sys&&!m.mine,a:other.first,pic:other.pic}));
+    const lastMsg=chat=>{const m=[...chat].reverse().find(x=>!x.sys);return m?(m.mine?'Você: ':'')+m.t:'Comece a conversa';};
+    const chatting=isOwner?mbRaw.reqs.filter(r=>r.status==='chatting'):[];
+    const lSel=chatting.find(r=>r.id===st.lChatId);
+    const patchReq=(id,fn)=>patchBand(mbRaw.id,b=>({...b,reqs:b.reqs.map(x=>x.id===id?fn(x):x)}));
+    const lSend=()=>{const t=(st.lDraft||'').trim();if(!t||!lSel)return;patchReq(lSel.id,x=>({...x,chat:[...x.chat,{mine:true,t}]}));this.setState({lDraft:''});};
+    const lVagaOpen=!!lSel&&mbRaw.vagas.includes(lSel.r);
+    const lChat=!lSel?{}:{title:lSel.n,sub:lSel.r+' · '+lSel.lvl+' · '+lSel.city,pic:pic(lSel.i),
+      msgs:msgsV(lSel.chat,{first:lSel.n.split(' ')[0],pic:pic(lSel.i)}),
+      draft:st.lDraft||'',onDraft:e=>this.setState({lDraft:e.target.value}),onKey:e=>{if(e.key==='Enter')lSend();},send:lSend,
+      vagaFull:!lVagaOpen,fullText:'A vaga de '+lSel.r+' já foi preenchida.',acceptBg:lVagaOpen?'#e8774f':'#e6e2da',acceptFg:lVagaOpen?'#1d1b18':'#8f897f',
+      decline:()=>{patchReq(lSel.id,x=>({...x,status:'declined'}));this.setState({lChatId:null});},
+      accept:()=>{if(!lVagaOpen)return;const r=lSel,first=r.n.split(' ')[0];patchBand(mbRaw.id,b=>({...b,reqs:b.reqs.map(x=>x.id===r.id?{...x,status:'accepted'}:x),vagas:dropOne(b.vagas,r.r),members:[...b.members,{i:r.i,n:r.n,r:r.r,lvl:r.lvl,tag:''}],msgs:[...b.msgs,{sys:true,t:first+' entrou na banda.'}]}));this.setState({lChatId:null});}};
+    const sentChats=st.sent.filter(x=>x.status==='chatting');
+    const cSelX=sentChats.find(x=>x.bandId===st.cChatId)||sentChats[0];
+    const cBand=cSelX&&BANDS.find(b=>b.id===cSelX.bandId),cLead=cBand&&cBand.members.find(m=>m.lead);
+    const cSend=()=>{const t=(st.cDraft||'').trim();if(!t||!cSelX)return;this.setState(s=>({cDraft:'',sent:s.sent.map(y=>y.bandId===cSelX.bandId?{...y,chat:[...y.chat,{mine:true,t}]}:y)}));};
+    const cChat=!cSelX?{}:{title:cBand.name,sub:'Conversa com '+cLead.n+' (líder) · vaga de '+cBand.vaga,pic:pic(cLead.i),
+      msgs:msgsV(cSelX.chat,{first:cLead.n.split(' ')[0],pic:pic(cLead.i)}),
+      draft:st.cDraft||'',onDraft:e=>this.setState({cDraft:e.target.value}),onKey:e=>{if(e.key==='Enter')cSend();},send:cSend,
+      viewBand:()=>this.setState({bandId:cBand.id,searchView:'detail'})};
     const send=()=>{const t=st.draft.trim();if(!t||!mbRaw)return;this.setState({draft:''});patchBand(mbRaw.id,b=>({...b,msgs:[...b.msgs,{mine:true,t}]}));};
     const seg=(on)=>({bg:on?'#fff':'transparent',fg:on?INK:'#6b665e',sh:on?'0 1px 3px rgba(29,27,24,.14)':'none'});
     return {
@@ -200,6 +215,7 @@ class Component extends DCLogic {
       passHint:st.authMode==='signup'?'Mínimo de 6 caracteres':'Sua senha',passAuto:st.authMode==='signup'?'new-password':'current-password',
       hasAuthErr:!!st.authErr,authErr:st.authErr,userName:st.userName,userEmail:st.userEmail,
       logout:()=>this.go('login'),
+      notifBg:st.emailNotif?OK:'#d9d3c8',notifJc:st.emailNotif?'flex-end':'flex-start',toggleEmailNotif:()=>this.setState(s=>({emailNotif:!s.emailNotif})),
       onbSteps:['Boas-vindas','Instrumento e nível','Estilo e objetivo','Disponibilidade e cidade'].map((label,i)=>({n:i+1,label,bg:i<st.step?OK:i===st.step?INK:'transparent',fg:i<=st.step?'#fff':'#6b665e',bd:i<st.step?OK:i===st.step?INK:'#c9c2b5',fw:i===st.step?700:500,tc:i<=st.step?INK:'#6b665e'})),
       isStep0:st.step===0,isStep1:st.step===1,isStep2:st.step===2,isStep3:st.step===3,
       showBack:st.step>0||st.editing,nextLabel:st.editing?'Salvar':st.step===0?'Criar meu perfil':st.step===3?'Ver bandas compatíveis':'Continuar',
@@ -234,24 +250,39 @@ class Component extends DCLogic {
       profileRows:[['flag','Objetivo',st.goal,2],['library_music','Gêneros',[...st.genres.filter(x=>x!=='Outro'),...st.customGenres].join(', ')||'—',2],['location_on','Cidade',st.city||'—',3]].map(([icon,label,value,step])=>({icon,label,value,edit:()=>this.setState({screen:'onb',step,editing:true})})),
 
       calHead:['',...DAYS],isSearchList:st.searchView==='list',isDetail:st.searchView==='detail',isMatchSub:st.searchSub==='match',isSentSub:st.searchSub==='sent',
-      searchSubs:[['match','Compatíveis',shown.length],['sent','Solicitações enviadas',st.sent.length]].map(([k,label,n])=>({label,n,...seg(st.searchSub===k),onClick:()=>this.setState({searchSub:k})})),
-      filterChips:[chip('Horário compatível',st.fTime,()=>this.setState({fTime:!st.fTime})),chip('Mesmo objetivo',st.fGoal,()=>this.setState({fGoal:!st.fGoal})),chip('Meu nível',st.fLvl,()=>this.setState({fLvl:!st.fLvl}))],
-      bandsShown:shown,hiddenCountShow:all.length>shown.length,hiddenText:(all.length-shown.length)+' banda(s) oculta(s) pelos filtros ou descartada(s)',
-      sentList:st.sent.map(x=>{const b=BANDS.find(y=>y.id===x.bandId),T=STATUS[x.status];return {name:b.name,ico:ico(b.vaga,INK),meta:x.status==='testing'?'Vaga: '+b.vaga+' · combine o teste com '+b.members.find(m=>m.lead).n.split(' ')[0]+' pelo WhatsApp '+LEAD_PHONE[b.id]:'Vaga: '+b.vaga+' · '+b.genres+' · enviada em '+x.date,statusLabel:T.l+(x.status==='testing'&&x.test?' · '+fmtTest(x.test):''),sBg:T.bg,sFg:T.fg,isPending:x.status==='pending'||x.status==='testing',isAccepted:x.status==='accepted',simLabel:x.status==='pending'?'Simular chamada pra teste':'Simular entrada',
-        view:()=>this.setState({bandId:b.id,searchView:'detail'}),cancel:()=>this.setState(s=>({sent:s.sent.filter(y=>y.bandId!==b.id)})),simulate:()=>x.status==='pending'?this.setState(s=>({sent:s.sent.map(y=>y.bandId===b.id?{...y,status:'testing',test:{date:'2026-10-17',time:'10:00'}}:y)})):this.acceptSent(b.id),
+      searchSubs:[['match','Compatíveis',shown.length],['sent','Solicitações enviadas',st.sent.length],['chats','Conversas',sentChats.length]].map(([k,label,n])=>({label,n,...seg(st.searchSub===k),onClick:()=>this.setState({searchSub:k})})),
+      bandQuery:st.bandQuery||'',onBandQuery:e=>this.setState({bandQuery:e.target.value}),clearBandQuery:()=>this.setState({bandQuery:''}),hasBandQuery:!!st.bandQuery,
+      filtersOpen:!!st.filtersOpen,toggleFilters:()=>this.setState(s=>({filtersOpen:!s.filtersOpen})),
+      filterLabel:nFilters?'Filtros · '+nFilters:'Filtros',filterBtnBg:nFilters||st.filtersOpen?INK:'#fff',filterBtnFg:nFilters||st.filtersOpen?'#f7f5f0':INK,
+      fGoalChips:GOALS.map(g=>chip(g.label,st.fGoals.includes(g.label),()=>toggleArr('fGoals',g.label))),
+      fGenreChips:[...new Set(BANDS.flatMap(b=>b.genres.split(' · ')))].map(g=>chip(g,st.fGenres.includes(g),()=>toggleArr('fGenres',g))),
+      fToggleChips:[chip('Bate com meu horário',st.fTime,()=>this.setState({fTime:!st.fTime})),chip('No meu nível',st.fLvl,()=>this.setState({fLvl:!st.fLvl}))],
+      hasFilters:nFilters>0,clearFilters:()=>this.setState({fTime:false,fLvl:false,fGoals:[],fGenres:[]}),
+      noBands:shown.length===0,
+      bandsShown:shown,hiddenCountShow:all.length>shown.length,hiddenText:(all.length-shown.length)+(all.length-shown.length>1?' bandas ocultas pela busca ou filtros':' banda oculta pela busca ou filtros'),
+      sentList:st.sent.map(x=>{const b=BANDS.find(y=>y.id===x.bandId),T=STATUS[x.status],ld=b.members.find(m=>m.lead);return {name:b.name,ico:ico(b.vaga,INK),
+        meta:x.status==='chatting'?'Vaga: '+b.vaga+' · '+ld.n.split(' ')[0]+' chamou você pra conversar':'Vaga: '+b.vaga+' · '+b.genres+' · enviada em '+x.date,
+        statusLabel:T.l,sBg:T.bg,sFg:T.fg,isPending:x.status==='pending',isChatting:x.status==='chatting',isAccepted:x.status==='accepted',
+        simLabel:x.status==='pending'?'Simular: banda chamou pra conversar':'Simular aceite',
+        openChat:()=>this.setState({searchSub:'chats',cChatId:b.id}),
+        view:()=>this.setState({bandId:b.id,searchView:'detail'}),cancel:()=>this.setState(s=>({sent:s.sent.filter(y=>y.bandId!==b.id)})),
+        simulate:()=>x.status==='pending'?this.setState(s=>({sent:s.sent.map(y=>y.bandId===b.id?{...y,status:'chatting',chat:[{sys:true,t:'Conversa privada com '+b.name+'. Só você e o líder veem.'},{t:TEST[b.id].m}]}:y)})):this.acceptSent(b.id),
         goBand:()=>this.setState({tab:'bands',bandsView:'band',myBandId:b.id})};}),
       noSent:!st.sent.length,
       band,backToSearch:()=>this.setState({searchView:'list'}),
       showDismiss:!myReq,
       dismiss:()=>this.setState(s=>({dismissed:[...s.dismissed,s.bandId],searchView:'list'})),
-      ctaLabel:!myReq?'Quero entrar':myReq.status==='accepted'?'Abrir em Minhas bandas':'Solicitação enviada',
+      ctaLabel:!myReq?'Quero entrar':myReq.status==='accepted'?'Abrir em Minhas bandas':myReq.status==='chatting'?'Abrir conversa':'Solicitação enviada',
       ctaBg:!myReq?'#e8774f':myReq.status==='pending'?'#efe9df':INK,ctaFg:!myReq?'#1d1b18':myReq.status==='pending'?INK:'#f7f5f0',
-      ctaNote:!myReq?'A entrada começa com um ensaio teste. Seus contatos ficam ocultos.':myReq.status==='accepted'?'Você está em ensaio teste com esta banda.':'Acompanhe em Procurar bandas › Solicitações enviadas.',
-      requestJoin:()=>{ if(!myReq) return this.setState(s=>({sent:[{bandId:band.id,status:'pending',date:'8 out'},...s.sent]})); if(myReq.status==='accepted') return this.setState({tab:'bands',bandsView:'band',myBandId:band.id}); this.setState({searchView:'list',searchSub:'sent'}); },
+      ctaNote:!myReq?'O líder pode aceitar direto ou chamar você pra conversar antes.':myReq.status==='accepted'?'Você entrou nesta banda.':myReq.status==='chatting'?'O líder chamou você pra conversar.':'Acompanhe em Procurar bandas › Solicitações enviadas.',
+      requestJoin:()=>{ if(!myReq) return this.setState(s=>({sent:[{bandId:band.id,status:'pending',date:'8 out',chat:[]},...s.sent]})); if(myReq.status==='accepted') return this.setState({tab:'bands',bandsView:'band',myBandId:band.id}); if(myReq.status==='chatting') return this.setState({searchView:'list',searchSub:'chats',cChatId:band.id}); this.setState({searchView:'list',searchSub:'sent'}); },
 
       isBandView:st.bandsView==='band'&&!!mbRaw,
+      isReqList:!lSel,isReqChat:!!lSel,closeChat:()=>this.setState({lChatId:null}),lChat,
+      cChats:sentChats.map(x=>{const b=BANDS.find(y=>y.id===x.bandId),ld=b.members.find(m=>m.lead);return {name:b.name,sub:ld.n.split(' ')[0]+' · vaga de '+b.vaga,last:lastMsg(x.chat),pic:pic(ld.i),bg:x===cSelX?'#f3efe8':'transparent',open:()=>this.setState({cChatId:x.bandId})};}),
+      cHasChat:!!cSelX,cNoChats:!sentChats.length,cChat,isChatsSub:st.searchSub==='chats',
       isBandMain:sub==='band',isBandReqs:sub==='reqs',isBandCfg:sub==='cfg',isBandEmpty:st.bandsView==='band'&&!mbRaw,goSearch:()=>this.go('search'),
-      bandSubs:[['band','Banda'],...(isOwner?[['reqs','Solicitações']]:[]),['cfg','Configurações']].map(([k,label])=>{const on=sub===k,n=mbRaw?mbRaw.reqs.filter(r=>r.status==='pending').length:0;return {label,isText:k!=='cfg',isIcon:k==='cfg',px:k==='cfg'?'9px':'16px',bg:on?'#f7f5f0':'transparent',fg:on?INK:'#c9c2b5',badge:k==='reqs'&&n>0,n,onClick:()=>k==='cfg'?openCfg():this.setState({bandSub:k})};}),
+      bandSubs:[['band','Banda'],...(isOwner?[['reqs','Solicitações']]:[]),['cfg','Configurações']].map(([k,label])=>{const on=sub===k,n=mbRaw?mbRaw.reqs.filter(r=>r.status==='pending').length:0;return {label,isText:k!=='cfg',isIcon:k==='cfg',px:k==='cfg'?'9px':'16px',bg:on?'#f7f5f0':'transparent',fg:on?INK:'#c9c2b5',badge:k==='reqs'&&n>0,n,onClick:()=>k==='cfg'?openCfg():this.setState({bandSub:k,lChatId:null})};}),
       cName2:st.nameDraft||'',onNameDraft:e=>{const v=e.target.value;this.setState({nameDraft:v});if(v.trim())live(b=>({...b,name:v.trim()}));},
       cfgName:cfgRow('name','badge','Nome',mbRaw?mbRaw.name:''),
       cfgGenres:cfgRow('genres','library_music','Gêneros',bGenres.join(', ')||'Nenhum gênero'),

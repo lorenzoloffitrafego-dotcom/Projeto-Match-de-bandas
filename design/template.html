@@ -303,11 +303,16 @@
               <span style="font-size:13px;color:#6b665e">Mudanças no perfil recalculam o match com as bandas na hora.</span>
             </div>
             <div style="display:flex;flex-direction:column;gap:12px">
-              <span style="font-size:14px;font-weight:700;color:#4a463f">Conta</span>
+              <span style="font-size:14px;font-weight:700;color:#4a463f">Conta e avisos</span>
               <div style="display:flex;flex-direction:column;background:#fff;border:1px solid #e6e2da;border-radius:20px">
                 <div style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid #efebe4">
                   <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#6b665e">mail</span>
                   <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;font-weight:600;color:#6b665e">E-mail</span><span style="font-size:15px;font-weight:500">{{ userEmail }}</span></span>
+                </div>
+                <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid #efebe4">
+                  <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#6b665e">notifications</span>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:500">Avisos por e-mail</span><span style="font-size:13px;color:#6b665e">Novas solicitações, mensagens e respostas das bandas.</span></span>
+                  <button sc-camel-on-click="{{ toggleEmailNotif }}" aria-label="Avisos por e-mail" style="width:46px;height:28px;border-radius:14px;border:none;padding:3px;background:{{ notifBg }};display:flex;justify-content:{{ notifJc }};transition:background .2s;flex:none"><span style="width:22px;height:22px;border-radius:11px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2)"></span></button>
                 </div>
                 <button sc-camel-on-click="{{ logout }}" style="display:flex;align-items:center;gap:10px;padding:16px 18px;border:none;background:transparent;color:#b4502e;font-size:15px;font-weight:600;text-align:left;border-radius:0 0 20px 20px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">logout</span>Sair da conta</button>
               </div>
@@ -333,9 +338,23 @@
 
               <sc-if value="{{ isMatchSub }}" hint-placeholder-val="{{ true }}">
                 <div style="display:flex;flex-direction:column;gap:20px">
-                  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-                    <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#6b665e;margin-right:4px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">tune</span>Filtros</span>
-                    <sc-for list="{{ filterChips }}" as="c" hint-placeholder-count="3"><button sc-camel-on-click="{{ c.onClick }}" style="height:36px;padding:0 14px;border-radius:18px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};font-size:13px;font-weight:600">{{ c.label }}</button></sc-for>
+                  <div style="display:flex;flex-direction:column;gap:12px">
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <div style="position:relative;flex:1;min-width:0;max-width:520px">
+                        <span style="position:absolute;left:14px;top:13px;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#6b665e;pointer-events:none">search</span>
+                        <input value="{{ bandQuery }}" sc-camel-on-change="{{ onBandQuery }}" placeholder="Buscar banda pelo nome" sc-camel-auto-complete="off" style="width:100%;box-sizing:border-box;height:46px;border-radius:23px;border:1px solid #ddd8ce;background:#fff;padding:0 40px 0 42px;font-size:15px;color:#1d1b18;outline:none">
+                        <sc-if value="{{ hasBandQuery }}" hint-placeholder-val="{{ false }}"><button sc-camel-on-click="{{ clearBandQuery }}" aria-label="Limpar busca" style="position:absolute;right:6px;top:7px;width:32px;height:32px;border:none;border-radius:16px;background:transparent;color:#6b665e;font-family:'Material Symbols Rounded';font-size:18px;padding:0">close</button></sc-if>
+                      </div>
+                      <button sc-camel-on-click="{{ toggleFilters }}" style="display:flex;align-items:center;gap:6px;height:46px;padding:0 18px 0 14px;border-radius:23px;border:1px solid #1d1b18;background:{{ filterBtnBg }};color:{{ filterBtnFg }};font-size:14px;font-weight:600;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">tune</span>{{ filterLabel }}</button>
+                    </div>
+                    <sc-if value="{{ filtersOpen }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;flex-direction:column;gap:16px;padding:20px;border-radius:20px;background:#fff;border:1px solid #e6e2da">
+                        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:12px;font-weight:700;letter-spacing:.06em;color:#8a847a">COMPATIBILIDADE</span><div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ fToggleChips }}" as="c" hint-placeholder-count="2"><button sc-camel-on-click="{{ c.onClick }}" style="height:36px;padding:0 14px;border-radius:18px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};font-size:14px;font-weight:500">{{ c.label }}</button></sc-for></div></div>
+                        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:12px;font-weight:700;letter-spacing:.06em;color:#8a847a">OBJETIVO</span><div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ fGoalChips }}" as="c" hint-placeholder-count="3"><button sc-camel-on-click="{{ c.onClick }}" style="height:36px;padding:0 14px;border-radius:18px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};font-size:14px;font-weight:500">{{ c.label }}</button></sc-for></div></div>
+                        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:12px;font-weight:700;letter-spacing:.06em;color:#8a847a">GÊNERO</span><div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ fGenreChips }}" as="c" hint-placeholder-count="6"><button sc-camel-on-click="{{ c.onClick }}" style="height:36px;padding:0 14px;border-radius:18px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};font-size:14px;font-weight:500">{{ c.label }}</button></sc-for></div></div>
+                        <sc-if value="{{ hasFilters }}" hint-placeholder-val="{{ false }}"><div><button sc-camel-on-click="{{ clearFilters }}" style="padding:0;border:none;background:transparent;color:#b4502e;font-size:14px;font-weight:600">Limpar filtros</button></div></sc-if>
+                      </div>
+                    </sc-if>
                   </div>
                   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px">
                     <sc-for list="{{ bandsShown }}" as="b" hint-placeholder-count="3">
@@ -383,6 +402,10 @@
                           <button sc-camel-on-click="{{ s.cancel }}" style="height:40px;padding:0 14px;border-radius:20px;border:none;background:transparent;color:#6b665e;font-size:14px;font-weight:600">Cancelar</button>
                           <button sc-camel-on-click="{{ s.simulate }}" title="Só no protótipo" style="height:40px;padding:0 14px;border-radius:20px;border:1px dashed #b4502e;background:transparent;color:#b4502e;font-size:13px;font-weight:600">{{ s.simLabel }}</button>
                         </sc-if>
+                        <sc-if value="{{ s.isChatting }}" hint-placeholder-val="{{ false }}">
+                          <button sc-camel-on-click="{{ s.openChat }}" style="display:flex;align-items:center;gap:6px;height:40px;padding:0 16px 0 12px;border-radius:20px;border:none;background:#1d1b18;color:#f7f5f0;font-size:14px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">chat</span>Conversa</button>
+                          <button sc-camel-on-click="{{ s.simulate }}" title="Só no protótipo" style="height:40px;padding:0 14px;border-radius:20px;border:1px dashed #b4502e;background:transparent;color:#b4502e;font-size:13px;font-weight:600">{{ s.simLabel }}</button>
+                        </sc-if>
                         <sc-if value="{{ s.isAccepted }}" hint-placeholder-val="{{ false }}">
                           <button sc-camel-on-click="{{ s.goBand }}" style="display:flex;align-items:center;gap:6px;height:40px;padding:0 16px;border-radius:20px;border:none;background:#1d1b18;color:#f7f5f0;font-size:14px;font-weight:600">Abrir em Minhas bandas<span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">arrow_forward</span></button>
                         </sc-if>
@@ -396,6 +419,50 @@
                     </div>
                   </sc-if>
                 </div>
+              </sc-if>
+
+              <sc-if value="{{ isChatsSub }}" hint-placeholder-val="{{ false }}">
+                <sc-if value="{{ cNoChats }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:56px 24px;border-radius:20px;border:1.5px dashed #ddd8ce;text-align:center;color:#6b665e">
+                    <span style="font-family:'Material Symbols Rounded';font-size:36px;line-height:1;color:#c9c2b5">chat</span>
+                    <span style="font-size:15px">Nenhuma conversa ainda. Quando um líder chamar você pra conversar, ela aparece aqui.</span>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ cHasChat }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+                    <div style="flex:1 1 240px;max-width:340px;display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:22px;background:#fff;border:1px solid #e6e2da">
+                      <sc-for list="{{ cChats }}" as="c" hint-placeholder-count="1">
+                        <button sc-camel-on-click="{{ c.open }}" style="display:flex;align-items:center;gap:12px;padding:10px;border:none;border-radius:14px;background:{{ c.bg }};text-align:left;color:#1d1b18">
+                          <img sc-camel-src="{{ c.pic }}" alt="" style="display:block;width:44px;height:44px;border-radius:22px;background:#efe9df;object-fit:cover;flex:none">
+                          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:700">{{ c.name }}</span><span style="font-size:12px;color:#6b665e">{{ c.sub }}</span><span style="font-size:13px;color:#4a463f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.last }}</span></span>
+                        </button>
+                      </sc-for>
+                    </div>
+                    <div style="flex:3 1 360px;min-width:0;height:560px;display:flex;flex-direction:column;border-radius:22px;background:#fff;border:1px solid #e6e2da;overflow:hidden">
+                        <div style="flex:none;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid #efebe4">
+                          <img sc-camel-src="{{ cChat.pic }}" alt="" style="display:block;width:42px;height:42px;border-radius:21px;background:#efe9df;object-fit:cover;flex:none">
+                          <span style="flex:1 1 160px;min-width:0;display:flex;flex-direction:column"><span style="font-size:16px;font-weight:700">{{ cChat.title }}</span><span style="font-size:13px;color:#6b665e">{{ cChat.sub }}</span></span>
+                          <button sc-camel-on-click="{{ cChat.viewBand }}" style="height:38px;padding:0 16px;border-radius:19px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Ver banda</button>
+                        </div>
+                        <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:20px;background:#fbfaf7">
+                          <sc-for list="{{ cChat.msgs }}" as="m" hint-placeholder-count="2">
+                            <sc-if value="{{ m.isSys }}" hint-placeholder-val="{{ false }}"><div style="align-self:center;max-width:380px;padding:6px 12px;border-radius:10px;background:#efe9df;font-size:12px;line-height:1.4;color:#4a463f;text-align:center">{{ m.t }}</div></sc-if>
+                            <sc-if value="{{ m.isMine }}" hint-placeholder-val="{{ false }}"><div style="align-self:flex-end;max-width:min(440px,75%);padding:10px 14px;border-radius:18px 18px 4px 18px;background:#1d1b18;color:#f7f5f0;font-size:15px;line-height:1.4">{{ m.t }}</div></sc-if>
+                            <sc-if value="{{ m.isOther }}" hint-placeholder-val="{{ true }}">
+                              <div style="align-self:flex-start;display:flex;align-items:flex-end;gap:8px;max-width:min(480px,82%)">
+                                <img sc-camel-src="{{ m.pic }}" alt="" style="display:block;width:30px;height:30px;border-radius:15px;background:#efe9df;object-fit:cover;flex:none">
+                                <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:12px;font-weight:600;color:#6b665e;padding-left:4px">{{ m.a }}</span><div style="padding:10px 14px;border-radius:18px 18px 18px 4px;background:#fff;border:1px solid #e6e2da;font-size:15px;line-height:1.4">{{ m.t }}</div></div>
+                              </div>
+                            </sc-if>
+                          </sc-for>
+                        </div>
+                        <div style="flex:none;display:flex;gap:8px;padding:12px 16px;border-top:1px solid #efebe4">
+                          <input value="{{ cChat.draft }}" sc-camel-on-change="{{ cChat.onDraft }}" sc-camel-on-key-down="{{ cChat.onKey }}" placeholder="Escreva uma mensagem" style="flex:1;min-width:0;height:46px;border-radius:23px;border:1px solid #ddd8ce;background:#fff;padding:0 18px;font-size:15px;color:#1d1b18;outline:none">
+                          <button sc-camel-on-click="{{ cChat.send }}" aria-label="Enviar" style="width:46px;height:46px;border-radius:23px;border:none;background:#1d1b18;color:#f7f5f0;font-family:'Material Symbols Rounded';font-size:22px;flex:none">send</button>
+                        </div>
+                      </div>
+                  </div>
+                </sc-if>
               </sc-if>
             </sc-if>
 
@@ -755,53 +822,23 @@
                 </sc-if>
 
                 <sc-if value="{{ isBandReqs }}" hint-placeholder-val="{{ false }}">
+                  <sc-if value="{{ isReqList }}" hint-placeholder-val="{{ true }}">
                   <div style="display:flex;flex-direction:column;gap:12px">
                     <sc-for list="{{ mb.reqsV }}" as="q" hint-placeholder-count="2">
                       <div style="display:flex;flex-direction:column;gap:20px;padding:24px;border-radius:22px;background:#fff;border:1px solid #e6e2da">
                         <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
                           <img sc-camel-src="{{ q.pic }}" alt="" style="display:block;width:64px;height:64px;border-radius:32px;background:#efe9df;object-fit:cover;flex:none">
                           <div style="flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:4px">
-                            <span style="font:700 19px 'Bricolage Grotesque',sans-serif">{{ q.n }}</span>
+                            <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font:700 19px 'Bricolage Grotesque',sans-serif">{{ q.n }}</span><sc-if value="{{ q.isChatting }}" hint-placeholder-val="{{ false }}"><span style="padding:3px 9px;border-radius:10px;background:#e4e0ea;color:#4b3f72;font-size:11px;font-weight:700">EM CONVERSA</span></sc-if></span>
                             <span style="display:flex;align-items:center;gap:4px;font-size:14px;color:#6b665e"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">location_on</span>{{ q.city }}</span>
                           </div>
-                          <sc-if value="{{ q.showActions }}" hint-placeholder-val="{{ true }}">
-                            <div style="display:flex;gap:8px">
-                              <button sc-camel-on-click="{{ q.decline }}" style="height:42px;padding:0 18px;border-radius:21px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Recusar</button>
-                              <button sc-camel-on-click="{{ q.openSched }}" style="height:42px;padding:0 20px;border-radius:21px;border:none;background:#1d1b18;color:#f7f5f0;font-size:14px;font-weight:600">Chamar pra teste</button>
-                            </div>
-                          </sc-if>
-                          <sc-if value="{{ q.isTesting }}" hint-placeholder-val="{{ false }}">
-                            <span style="padding:6px 12px;border-radius:12px;background:#e4e0ea;color:#4b3f72;font-size:13px;font-weight:700">EM TESTE</span>
-                          </sc-if>
+                          <div style="display:flex;gap:8px;flex-wrap:wrap">
+                            <button sc-camel-on-click="{{ q.decline }}" style="height:42px;padding:0 18px;border-radius:21px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Recusar</button>
+                            <button sc-camel-on-click="{{ q.talk }}" style="display:flex;align-items:center;gap:6px;height:42px;padding:0 18px 0 14px;border-radius:21px;border:1px solid #1d1b18;background:#fff;color:#1d1b18;font-size:14px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">chat</span>{{ q.talkLabel }}</button>
+                            <button sc-camel-on-click="{{ q.accept }}" style="height:42px;padding:0 20px;border-radius:21px;border:none;background:{{ q.acceptBg }};color:{{ q.acceptFg }};font-size:14px;font-weight:600">Aceitar</button>
+                          </div>
                         </div>
-                        <sc-if value="{{ q.schedOpen }}" hint-placeholder-val="{{ false }}">
-                          <div style="display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:16px;background:#fbfaf7;border:1.5px solid #1d1b18">
-                            <div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 17px 'Bricolage Grotesque',sans-serif">{{ q.schedTitle }}</span><span style="font-size:13px;color:#6b665e">Agendar é opcional: dá pra deixar em branco e combinar pelo WhatsApp.</span></div>
-                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;max-width:420px">
-                              <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#4a463f">Data</span><input type="date" value="{{ q.schedDate }}" sc-camel-on-change="{{ q.onSchedDate }}" style="height:44px;border-radius:12px;border:1px solid #ddd8ce;background:#fff;padding:0 12px;font-size:15px;color:#1d1b18;outline:none;box-sizing:border-box;width:100%"></label>
-                              <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#4a463f">Hora</span><input type="time" value="{{ q.schedTime }}" sc-camel-on-change="{{ q.onSchedTime }}" style="height:44px;border-radius:12px;border:1px solid #ddd8ce;background:#fff;padding:0 12px;font-size:15px;color:#1d1b18;outline:none;box-sizing:border-box;width:100%"></label>
-                            </div>
-                            <div style="display:flex;gap:8px;flex-wrap:wrap"><button sc-camel-on-click="{{ q.cancelSched }}" style="height:42px;padding:0 18px;border-radius:21px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Cancelar</button><button sc-camel-on-click="{{ q.confirmSched }}" style="height:42px;padding:0 20px;border-radius:21px;border:none;background:#1d1b18;color:#f7f5f0;font-size:14px;font-weight:600">{{ q.schedCta }}</button></div>
-                          </div>
-                        </sc-if>
-                        <sc-if value="{{ q.isTesting }}" hint-placeholder-val="{{ false }}">
-                          <div style="display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:16px;background:#f7f5f0">
-                            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-                              <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#4b3f72">event</span>
-                              <span style="font-size:15px;font-weight:600">Teste: {{ q.testText }}</span>
-                              <button sc-camel-on-click="{{ q.openSched }}" style="padding:0;border:none;background:transparent;color:#b4502e;font-size:14px;font-weight:600">{{ q.schedLink }}</button>
-                            </div>
-                            <div style="display:flex;align-items:center;gap:10px">
-                              <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#2f6b45">call</span>
-                              <span style="font-size:15px">WhatsApp: <b>{{ q.phone }}</b></span>
-                            </div>
-                            <sc-if value="{{ q.vagaFull }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:#f6ecd2;color:#7a5a12;font-size:13px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">info</span>{{ q.fullText }}</span></sc-if>
-                            <div style="display:flex;gap:8px;flex-wrap:wrap">
-                              <button sc-camel-on-click="{{ q.decline }}" style="height:42px;padding:0 18px;border-radius:21px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Não seguir</button>
-                              <button sc-camel-on-click="{{ q.accept }}" style="height:42px;padding:0 20px;border-radius:21px;border:none;background:{{ q.joinBg }};color:{{ q.joinFg }};font-size:14px;font-weight:600">Colocar na banda</button>
-                            </div>
-                          </div>
-                        </sc-if>
+                        <sc-if value="{{ q.vagaFull }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:#f6ecd2;color:#7a5a12;font-size:13px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">info</span>{{ q.fullText }}</span></sc-if>
                         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;padding-top:20px;border-top:1px solid #efebe4">
                           <div style="display:flex;flex-direction:column;gap:20px">
                             <div style="display:flex;flex-direction:column;gap:10px">
@@ -849,6 +886,36 @@
                       </div>
                     </sc-if>
                   </div>
+                  </sc-if>
+                  <sc-if value="{{ isReqChat }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-direction:column;gap:12px">
+                      <div><button sc-camel-on-click="{{ closeChat }}" style="display:flex;align-items:center;gap:4px;padding:0;border:none;background:transparent;color:#1d1b18;font-size:14px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">chevron_left</span>Solicitações</button></div>
+                      <sc-if value="{{ lChat.vagaFull }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:#f6ecd2;color:#7a5a12;font-size:13px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">info</span>{{ lChat.fullText }}</span></sc-if>
+                      <div style="display:flex"><div style="flex:3 1 360px;min-width:0;height:560px;display:flex;flex-direction:column;border-radius:22px;background:#fff;border:1px solid #e6e2da;overflow:hidden">
+                        <div style="flex:none;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid #efebe4">
+                          <img sc-camel-src="{{ lChat.pic }}" alt="" style="display:block;width:42px;height:42px;border-radius:21px;background:#efe9df;object-fit:cover;flex:none">
+                          <span style="flex:1 1 160px;min-width:0;display:flex;flex-direction:column"><span style="font-size:16px;font-weight:700">{{ lChat.title }}</span><span style="font-size:13px;color:#6b665e">{{ lChat.sub }}</span></span>
+                          <div style="display:flex;gap:8px"><button sc-camel-on-click="{{ lChat.decline }}" style="height:38px;padding:0 16px;border-radius:19px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Recusar</button><button sc-camel-on-click="{{ lChat.accept }}" style="height:38px;padding:0 18px;border-radius:19px;border:none;background:{{ lChat.acceptBg }};color:{{ lChat.acceptFg }};font-size:14px;font-weight:600">Aceitar na banda</button></div>
+                        </div>
+                        <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:20px;background:#fbfaf7">
+                          <sc-for list="{{ lChat.msgs }}" as="m" hint-placeholder-count="2">
+                            <sc-if value="{{ m.isSys }}" hint-placeholder-val="{{ false }}"><div style="align-self:center;max-width:380px;padding:6px 12px;border-radius:10px;background:#efe9df;font-size:12px;line-height:1.4;color:#4a463f;text-align:center">{{ m.t }}</div></sc-if>
+                            <sc-if value="{{ m.isMine }}" hint-placeholder-val="{{ false }}"><div style="align-self:flex-end;max-width:min(440px,75%);padding:10px 14px;border-radius:18px 18px 4px 18px;background:#1d1b18;color:#f7f5f0;font-size:15px;line-height:1.4">{{ m.t }}</div></sc-if>
+                            <sc-if value="{{ m.isOther }}" hint-placeholder-val="{{ true }}">
+                              <div style="align-self:flex-start;display:flex;align-items:flex-end;gap:8px;max-width:min(480px,82%)">
+                                <img sc-camel-src="{{ m.pic }}" alt="" style="display:block;width:30px;height:30px;border-radius:15px;background:#efe9df;object-fit:cover;flex:none">
+                                <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:12px;font-weight:600;color:#6b665e;padding-left:4px">{{ m.a }}</span><div style="padding:10px 14px;border-radius:18px 18px 18px 4px;background:#fff;border:1px solid #e6e2da;font-size:15px;line-height:1.4">{{ m.t }}</div></div>
+                              </div>
+                            </sc-if>
+                          </sc-for>
+                        </div>
+                        <div style="flex:none;display:flex;gap:8px;padding:12px 16px;border-top:1px solid #efebe4">
+                          <input value="{{ lChat.draft }}" sc-camel-on-change="{{ lChat.onDraft }}" sc-camel-on-key-down="{{ lChat.onKey }}" placeholder="Escreva uma mensagem" style="flex:1;min-width:0;height:46px;border-radius:23px;border:1px solid #ddd8ce;background:#fff;padding:0 18px;font-size:15px;color:#1d1b18;outline:none">
+                          <button sc-camel-on-click="{{ lChat.send }}" aria-label="Enviar" style="width:46px;height:46px;border-radius:23px;border:none;background:#1d1b18;color:#f7f5f0;font-family:'Material Symbols Rounded';font-size:22px;flex:none">send</button>
+                        </div>
+                      </div></div>
+                    </div>
+                  </sc-if>
                 </sc-if>
               </div>
             </sc-if>
