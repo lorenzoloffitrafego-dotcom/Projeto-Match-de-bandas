@@ -133,9 +133,9 @@
                           </div>
                           <span style="font-size:14px;font-weight:600;color:#4a463f">Seu nível em {{ ic.displayName }} hoje <span style="color:#b4502e">*</span></span>
                           <div style="padding:0 14px">
-                            <div style="position:relative;height:128px">
-                              <div style="position:absolute;bottom:66px;left:{{ ic.slider.pct }}%;transform:translateX(-{{ ic.slider.pct }}%);width:max-content;max-width:min(280px,100%);padding:10px 14px;border-radius:14px;background:{{ ic.slider.color }};color:#fff;font-size:14px;font-weight:600;line-height:1.35;transition:left .2s,transform .2s,background .2s">{{ ic.slider.balloon }}</div>
-                              <span style="position:absolute;bottom:52px;left:{{ ic.slider.pct }}%;margin-left:-8px;width:0;height:0;border:8px solid transparent;border-top-color:{{ ic.slider.color }};transition:left .2s,border-color .2s"></span>
+                            <div style="position:relative;display:inline-block;left:{{ ic.slider.pct }}%;transform:translateX(-{{ ic.slider.pct }}%);width:max-content;max-width:min(280px,100%);padding:10px 14px;border-radius:14px;background:{{ ic.slider.color }};color:#fff;font-size:14px;font-weight:600;line-height:1.35;transition:left .2s,transform .2s,background .2s">{{ ic.slider.balloon }}</div>
+                            <div style="position:relative;height:8px"><span style="position:absolute;top:0;left:{{ ic.slider.pct }}%;margin-left:-8px;width:0;height:0;border:8px solid transparent;border-top-color:{{ ic.slider.color }};transition:left .2s,border-color .2s"></span></div>
+                            <div style="position:relative;height:58px;margin-top:2px">
                               <span style="position:absolute;bottom:32px;left:0;right:0;height:6px;border-radius:3px;background:#e6e2da"></span>
                               <span style="position:absolute;bottom:32px;left:0;width:{{ ic.slider.pct }}%;height:6px;border-radius:3px;background:{{ ic.slider.color }};transition:width .2s,background .2s"></span>
                               <sc-for list="{{ ic.slider.ticks }}" as="t" hint-placeholder-count="4"><span style="position:absolute;bottom:29px;left:{{ t.left }};margin-left:-6px;width:12px;height:12px;border-radius:6px;background:{{ t.dot }}"></span></sc-for>
