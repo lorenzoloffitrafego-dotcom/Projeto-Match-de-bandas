@@ -117,7 +117,7 @@ class Component extends DCLogic {
     const myReq=st.sent.find(x=>x.bandId===band.id);
     const mbRaw=st.myBands.find(b=>b.id===st.myBandId)||st.myBands[0];
     const patchBand=(id,fn)=>this.setState(s=>({myBands:s.myBands.map(b=>b.id===id?fn(b):b)}));
-    const ROLE={owner:['Dono','#e3efe6','#2f6b45'],member:['Membro','#efe9df','#4a463f']};
+    const ROLE={owner:['Líder','#e3efe6','#2f6b45'],member:['Membro','#efe9df','#4a463f']};
     const TAG={'Líder':['#efe9df','#4a463f'],'Em teste':['#f6ecd2','#7a5a12']};
     const pendOwner=st.myBands.filter(b=>b.role==='owner').reduce((n,b)=>n+b.reqs.filter(r=>r.status==='pending').length,0);
     let mb={};
@@ -141,6 +141,18 @@ class Component extends DCLogic {
         cal:PER.flatMap(p=>[{isLabel:true,isCell:false,label:p[0]},...DAYS.map(dd=>{const k=dd+'-'+p,on=(mbRaw.slots||[]).includes(k);return {isLabel:false,isCell:true,bg:on?INK:'#f3efe8',bd:on?INK:'#efebe4'};})]),
         hasRep:!!(mbRaw.rep&&mbRaw.rep.length),noRep:!(mbRaw.rep&&mbRaw.rep.length),repCount:(mbRaw.rep||[]).length+' músicas',repV:(mbRaw.rep||[]).map((r,k)=>({...r,n:String(k+1).padStart(2,'0')})),
         rehPending:!mbRaw.reh.confirmed,rehConfirmed:mbRaw.reh.confirmed,rehBd:mbRaw.reh.confirmed?'#e6e2da':ACC}; }
+    const isOwner=!!mbRaw&&mbRaw.role==='owner';
+    const sub=!mbRaw?'band':st.bandSub==='reqs'&&!isOwner?'band':(st.bandSub||'band');
+    const ed=st.bEdit||{};
+    const setEd=p=>this.setState(s=>({bEdit:{...s.bEdit,...p},cfgSaved:false,editErr:''}));
+    const togEd=(k,v)=>this.setState(s=>{const a=s.bEdit[k]||[];return {bEdit:{...s.bEdit,[k]:a.includes(v)?a.filter(x=>x!==v):[...a,v]},cfgSaved:false,editErr:''};});
+    const openCfg=()=>{if(!mbRaw)return;this.setState({bandSub:'cfg',cfgConfirm:false,cfgSaved:false,editErr:'',bEdit:{name:mbRaw.name,genres:mbRaw.genres.split(' · ').filter(g=>g&&g!=='—'),goal:mbRaw.goal,vagas:[...mbRaw.vagas],slots:[...(mbRaw.slots||[])],rep:[...(mbRaw.rep||[])],song:'',artist:''}});};
+    const eAddSong=()=>{const t=(ed.song||'').trim();if(!t)return;setEd({rep:[...(ed.rep||[]),{t,a:(ed.artist||'').trim()}],song:'',artist:''});};
+    const saveBand=()=>{const name=(ed.name||'').trim();if(!name)return this.setState({editErr:'Dê um nome para a banda.'});
+      const ck=DAYS.flatMap(d=>PER.map(p=>d+'-'+p)).filter(k=>ed.slots.includes(k));
+      patchBand(mbRaw.id,b=>({...b,name,genres:ed.genres.join(' · ')||'—',goal:ed.goal,vagas:ed.vagas,slots:ck,when:ck.length?ck.map(x=>x.replace('-',' ').toLowerCase()).join(', '):'A definir',rep:ed.rep}));
+      this.setState({cfgSaved:true,editErr:''});};
+    const removeBand=()=>{if(!mbRaw)return;this.setState(s=>{const rest=s.myBands.filter(b=>b.id!==mbRaw.id);return {myBands:rest,myBandId:rest[0]?rest[0].id:null,bandSub:'band',cfgConfirm:false,sent:s.sent.filter(x=>x.bandId!==mbRaw.id)};});};
     const send=()=>{const t=st.draft.trim();if(!t||!mbRaw)return;this.setState({draft:''});patchBand(mbRaw.id,b=>({...b,msgs:[...b.msgs,{mine:true,t}]}));};
     const addSong=()=>{const t=st.cSong.trim();if(!t)return;this.setState(s=>({cRep:[...s.cRep,{t,a:s.cArtist.trim()}],cSong:'',cArtist:''}));};
     const seg=(on)=>({bg:on?'#fff':'transparent',fg:on?INK:'#6b665e',sh:on?'0 1px 3px rgba(29,27,24,.14)':'none'});
@@ -210,9 +222,26 @@ class Component extends DCLogic {
       requestJoin:()=>{ if(!myReq) return this.setState(s=>({sent:[{bandId:band.id,status:'pending',date:'8 out'},...s.sent]})); if(myReq.status==='accepted') return this.setState({tab:'bands',bandsView:'band',myBandId:band.id}); this.setState({searchView:'list',searchSub:'sent'}); },
 
       isBandView:st.bandsView==='band'&&!!mbRaw,
-      isBandMain:!mbRaw||mbRaw.role!=='owner'||st.bandSub!=='reqs',isBandReqs:!!mbRaw&&mbRaw.role==='owner'&&st.bandSub==='reqs',
-      bandSubs:[['band','Banda'],['reqs','Solicitações']].map(([k,label])=>{const on=(st.bandSub||'band')===k,n=mbRaw?mbRaw.reqs.filter(r=>r.status==='pending').length:0;return {label,bg:on?'#f7f5f0':'transparent',fg:on?INK:'#c9c2b5',badge:k==='reqs'&&n>0,n,onClick:()=>this.setState({bandSub:k})};}),
-      leaveBand:()=>{if(!mbRaw)return;this.setState(s=>{const rest=s.myBands.filter(b=>b.id!==mbRaw.id);return {myBands:rest,myBandId:rest[0]?rest[0].id:null,sent:s.sent.filter(x=>x.bandId!==mbRaw.id)};});},isCreate:st.bandsView==='create',createBg:st.bandsView==='create'?'#fff':'transparent',
+      isBandMain:sub==='band',isBandReqs:sub==='reqs',isBandCfg:sub==='cfg',isBandEmpty:st.bandsView==='band'&&!mbRaw,goSearch:()=>this.go('search'),
+      bandSubs:[['band','Banda'],...(isOwner?[['reqs','Solicitações']]:[]),['cfg','Configurações']].map(([k,label])=>{const on=sub===k,n=mbRaw?mbRaw.reqs.filter(r=>r.status==='pending').length:0;return {label,bg:on?'#f7f5f0':'transparent',fg:on?INK:'#c9c2b5',badge:k==='reqs'&&n>0,n,onClick:()=>k==='cfg'?openCfg():this.setState({bandSub:k})};}),
+      eName:ed.name||'',onEName:e=>setEd({name:e.target.value}),
+      eGenreChips:[...new Set([...GENRES,...(ed.genres||[])])].map(g=>chip(g,(ed.genres||[]).includes(g),()=>togEd('genres',g))),
+      eGoalOpts:GOALS.map(l=>({...l,bd:ed.goal===l.label?INK:'#e6e2da',onClick:()=>setEd({goal:l.label})})),
+      eVagaChips:INSTR.map(x=>{const on=(ed.vagas||[]).includes(x);return {...chip(x,on,()=>togEd('vagas',x)),ico:ico(x,on?'#f7f5f0':INK)};}),
+      eAvailCells:PER.flatMap(p=>[{isLabel:true,isCell:false,label:p},...DAYS.map(d=>{const k=d+'-'+p,on=(ed.slots||[]).includes(k);return {isLabel:false,isCell:true,bg:on?INK:'#fff',bd:on?INK:LINE,onClick:()=>togEd('slots',k)};})]),
+      eHasRep:!!(ed.rep&&ed.rep.length),eRepV:(ed.rep||[]).map((r,k)=>({...r,n:String(k+1).padStart(2,'0'),remove:()=>this.setState(s=>({bEdit:{...s.bEdit,rep:s.bEdit.rep.filter((_,j)=>j!==k)},cfgSaved:false}))})),
+      eSong:ed.song||'',eArtist:ed.artist||'',onESong:e=>setEd({song:e.target.value}),onEArtist:e=>setEd({artist:e.target.value}),
+      eAddSong,onERepKey:e=>{if(e.key==='Enter')eAddSong();},eAddSongBg:(ed.song||'').trim()?INK:'#d9d3c8',
+      saveBand,resetEdit:openCfg,eSaveBg:(ed.name||'').trim()?INK:'#d9d3c8',
+      cfgSaved:!!st.cfgSaved,hasEditErr:!!st.editErr,editErr:st.editErr||'',
+      dangerTitle:isOwner?'Excluir banda':'Sair da banda',
+      dangerText:isOwner?'Como líder, você pode excluir a banda. Ela some para todos os integrantes e as vagas deixam de aparecer na busca.':'Você deixa de fazer parte da banda e sua vaga volta a ficar aberta.',
+      dangerIcon:isOwner?'delete':'logout',dangerCta:isOwner?'Excluir banda':'Sair da banda',
+      noConfirm:!st.cfgConfirm,isConfirming:!!st.cfgConfirm,
+      confirmText:isOwner?'Tem certeza? Isso não pode ser desfeito.':'Tem certeza que quer sair de '+(mbRaw?mbRaw.name:'')+'?',
+      confirmCta:isOwner?'Sim, excluir banda':'Sim, sair da banda',
+      askDanger:()=>this.setState({cfgConfirm:true}),cancelDanger:()=>this.setState({cfgConfirm:false}),doDanger:removeBand,
+isCreate:st.bandsView==='create',createBg:st.bandsView==='create'?'#fff':'transparent',
       myBandPills:st.myBands.map(b=>{const on=st.bandsView==='band'&&mbRaw&&b.id===mbRaw.id,R=ROLE[b.role];return {name:b.name,role:R[0],tagBg:R[1],tagFg:R[2],bg:on?'#fff':'transparent',fg:INK,bd:on?INK:LINE,onClick:()=>this.setState({myBandId:b.id,bandsView:'band',bandSub:'band'})};}),
       goCreate:()=>this.go('create'),mb,
       bandMsgs:mbRaw?mbRaw.msgs.map(m=>({t:m.t,a:m.a,i:m.i,pic:pic(m.i),isSys:!!m.sys,isMine:!!m.mine,isOther:!m.sys&&!m.mine})):[],

@@ -508,13 +508,11 @@
                     <span style="font:700 clamp(32px,3.8vw,48px)/1.02 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">{{ mb.name }}</span>
                     <span style="font-size:16px;color:#c9c2b5">{{ mb.genres }}</span>
                   </div>
-                  <sc-if value="{{ mb.isOwner }}" hint-placeholder-val="{{ true }}">
-                    <div style="display:flex;gap:4px;padding:4px;border-radius:22px;background:#2e2b27">
+                  <div style="display:flex;gap:4px;padding:4px;border-radius:22px;background:#2e2b27">
                       <sc-for list="{{ bandSubs }}" as="t" hint-placeholder-count="2">
                         <button sc-camel-on-click="{{ t.onClick }}" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 16px;border:none;border-radius:19px;background:{{ t.bg }};color:{{ t.fg }};font-size:14px;font-weight:600;white-space:nowrap">{{ t.label }}<sc-if value="{{ t.badge }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:10px;background:#e8774f;color:#1d1b18;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ t.n }}</span></sc-if></button>
                       </sc-for>
                     </div>
-                  </sc-if>
                 </div>
 
                 <sc-if value="{{ isBandMain }}" hint-placeholder-val="{{ true }}">
@@ -563,9 +561,7 @@
                           </div>
                         </sc-for>
                       </div>
-                      <sc-if value="{{ mb.canLeave }}" hint-placeholder-val="{{ false }}">
-                        <button sc-camel-on-click="{{ leaveBand }}" style="flex:none;display:flex;align-items:center;justify-content:center;gap:6px;height:52px;border:none;border-top:1px solid #efebe4;background:#fff;color:#b4502e;font-size:14px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">logout</span>Sair da banda</button>
-                      </sc-if>
+                      
                     </div>
                   </div>
 
@@ -598,6 +594,89 @@
                       </sc-if>
                       <sc-if value="{{ mb.noRep }}" hint-placeholder-val="{{ false }}">
                         <span style="font-size:14px;line-height:1.5;color:#c9c2b5">Ainda sem repertório.</span>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ isBandCfg }}" hint-placeholder-val="{{ false }}">
+                  <div style="max-width:760px;display:flex;flex-direction:column;gap:16px">
+                    <sc-if value="{{ mb.isOwner }}" hint-placeholder-val="{{ true }}">
+                      <div style="display:flex;flex-direction:column;gap:14px;padding:24px;background:#fff;border:1px solid #e6e2da;border-radius:20px">
+                        <div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 20px/1.2 'Bricolage Grotesque',sans-serif">Nome da banda</span></div>
+                        <input value="{{ eName }}" sc-camel-on-change="{{ onEName }}" placeholder="Ex.: Garagem 22" style="height:46px;border-radius:12px;border:1px solid #ddd8ce;background:#fff;padding:0 14px;font-size:15px;color:#1d1b18;outline:none;box-sizing:border-box;max-width:420px">
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:14px;padding:24px;background:#fff;border:1px solid #e6e2da;border-radius:20px">
+                        <div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 20px/1.2 'Bricolage Grotesque',sans-serif">Gêneros</span><span style="font-size:14px;color:#6b665e">O estilo que a banda toca.</span></div>
+                        <div style="display:flex;flex-wrap:wrap;gap:8px">
+                          <sc-for list="{{ eGenreChips }}" as="c" hint-placeholder-count="9"><button sc-camel-on-click="{{ c.onClick }}" style="height:42px;padding:0 16px;border-radius:21px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};font-size:14px;font-weight:500">{{ c.label }}</button></sc-for>
+                        </div>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:14px;padding:24px;background:#fff;border:1px solid #e6e2da;border-radius:20px">
+                        <div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 20px/1.2 'Bricolage Grotesque',sans-serif">Objetivo da banda</span></div>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+                          <sc-for list="{{ eGoalOpts }}" as="l" hint-placeholder-count="3">
+                            <button sc-camel-on-click="{{ l.onClick }}" style="display:flex;flex-direction:column;gap:6px;text-align:left;padding:14px 16px;border-radius:14px;border:1.5px solid {{ l.bd }};background:#fff;color:#1d1b18"><span style="font-size:15px;font-weight:600">{{ l.label }}</span><span style="font-size:13px;line-height:1.4;color:#6b665e">{{ l.desc }}</span></button>
+                          </sc-for>
+                        </div>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:14px;padding:24px;background:#fff;border:1px solid #e6e2da;border-radius:20px">
+                        <div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 20px/1.2 'Bricolage Grotesque',sans-serif">Vagas abertas</span><span style="font-size:14px;color:#6b665e">Quais instrumentos ainda faltam na banda?</span></div>
+                        <div style="display:flex;flex-wrap:wrap;gap:8px">
+                          <sc-for list="{{ eVagaChips }}" as="c" hint-placeholder-count="8"><button sc-camel-on-click="{{ c.onClick }}" style="display:flex;align-items:center;gap:8px;height:42px;padding:0 16px 0 12px;border-radius:21px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};font-size:14px;font-weight:500"><span style="width:20px;height:20px;display:block;flex:none;background:center / contain no-repeat url({{ c.ico }})"></span>{{ c.label }}</button></sc-for>
+                        </div>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:14px;padding:24px;background:#fff;border:1px solid #e6e2da;border-radius:20px">
+                        <div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 20px/1.2 'Bricolage Grotesque',sans-serif">Horários de ensaio</span><span style="font-size:14px;color:#6b665e">Clique para marcar ou desmarcar.</span></div>
+                        <div style="display:grid;grid-template-columns:72px repeat(7,minmax(0,1fr));gap:6px;align-items:center">
+                          <sc-for list="{{ availHead }}" as="h" hint-placeholder-count="8"><span style="font-size:13px;font-weight:600;color:#6b665e;text-align:center">{{ h }}</span></sc-for>
+                          <sc-for list="{{ eAvailCells }}" as="a" hint-placeholder-count="24">
+                            <sc-if value="{{ a.isLabel }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;font-weight:600">{{ a.label }}</span></sc-if>
+                            <sc-if value="{{ a.isCell }}" hint-placeholder-val="{{ true }}"><button sc-camel-on-click="{{ a.onClick }}" style="height:42px;border-radius:10px;border:1px solid {{ a.bd }};background:{{ a.bg }}"></button></sc-if>
+                          </sc-for>
+                        </div>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:14px;padding:24px;background:#fff;border:1px solid #e6e2da;border-radius:20px">
+                        <div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 20px/1.2 'Bricolage Grotesque',sans-serif">Repertório</span><span style="font-size:14px;color:#6b665e">Músicas que a banda toca. Opcional.</span></div>
+                        <sc-if value="{{ eHasRep }}" hint-placeholder-val="{{ false }}">
+                          <div style="display:flex;flex-direction:column;border-radius:14px;border:1px solid #efebe4">
+                            <sc-for list="{{ eRepV }}" as="r" hint-placeholder-count="2">
+                              <div style="display:grid;grid-template-columns:28px 1fr auto 32px;gap:12px;align-items:center;padding:10px 12px;border-bottom:1px solid #efebe4">
+                                <span style="font:500 13px 'JetBrains Mono',monospace;color:#8f897f">{{ r.n }}</span>
+                                <span style="font-size:15px;font-weight:600;min-width:0">{{ r.t }}</span>
+                                <span style="font-size:14px;color:#6b665e;text-align:right">{{ r.a }}</span>
+                                <button sc-camel-on-click="{{ r.remove }}" aria-label="Remover" style="width:32px;height:32px;border-radius:16px;border:none;background:transparent;color:#6b665e;font-family:'Material Symbols Rounded';font-size:20px;padding:0">close</button>
+                              </div>
+                            </sc-for>
+                          </div>
+                        </sc-if>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr)) auto;gap:8px;align-items:end">
+                          <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#4a463f">Nome da música</span><input value="{{ eSong }}" sc-camel-on-change="{{ onESong }}" sc-camel-on-key-down="{{ onERepKey }}" placeholder="Ex.: Everlong" style="height:46px;border-radius:12px;border:1px solid #ddd8ce;background:#fff;padding:0 14px;font-size:15px;color:#1d1b18;outline:none;box-sizing:border-box"></label>
+                          <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#4a463f">Artista / banda</span><input value="{{ eArtist }}" sc-camel-on-change="{{ onEArtist }}" sc-camel-on-key-down="{{ onERepKey }}" placeholder="Ex.: Foo Fighters" style="height:46px;border-radius:12px;border:1px solid #ddd8ce;background:#fff;padding:0 14px;font-size:15px;color:#1d1b18;outline:none;box-sizing:border-box"></label>
+                          <button sc-camel-on-click="{{ eAddSong }}" style="display:flex;align-items:center;gap:6px;height:46px;padding:0 16px 0 12px;border-radius:12px;border:none;background:{{ eAddSongBg }};color:#f7f5f0;font-size:14px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">add</span>Adicionar</button>
+                        </div>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                        <button sc-camel-on-click="{{ saveBand }}" style="height:52px;padding:0 28px;border-radius:26px;border:none;background:{{ eSaveBg }};color:#f7f5f0;font-size:15px;font-weight:600">Salvar alterações</button>
+                        <button sc-camel-on-click="{{ resetEdit }}" style="height:52px;padding:0 22px;border-radius:26px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:15px;font-weight:600">Descartar</button>
+                        <sc-if value="{{ cfgSaved }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:#2f6b45"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">check_circle</span>Alterações salvas</span></sc-if>
+                        <sc-if value="{{ hasEditErr }}" hint-placeholder-val="{{ false }}"><span style="font-size:14px;font-weight:600;color:#8e3b1f">{{ editErr }}</span></sc-if>
+                      </div>
+                    </sc-if>
+
+                    <div style="display:flex;flex-direction:column;gap:14px;padding:24px;background:#fff;border:1px solid #e6e2da;border-radius:20px;border-color:#f0cdbf;margin-top:8px">
+                      <div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 20px/1.2 'Bricolage Grotesque',sans-serif">{{ dangerTitle }}</span><span style="font-size:14px;color:#6b665e">{{ dangerText }}</span></div>
+                      <sc-if value="{{ noConfirm }}" hint-placeholder-val="{{ true }}">
+                        <div><button sc-camel-on-click="{{ askDanger }}" style="display:flex;align-items:center;gap:8px;height:46px;padding:0 20px;border-radius:23px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600;color:#b4502e;border-color:#e8b9a6"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">{{ dangerIcon }}</span>{{ dangerCta }}</button></div>
+                      </sc-if>
+                      <sc-if value="{{ isConfirming }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:14px;background:#fbe4da">
+                          <span style="font-size:14px;font-weight:600;color:#8e3b1f">{{ confirmText }}</span>
+                          <div style="display:flex;gap:8px;flex-wrap:wrap">
+                            <button sc-camel-on-click="{{ cancelDanger }}" style="height:46px;padding:0 20px;border-radius:23px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Cancelar</button>
+                            <button sc-camel-on-click="{{ doDanger }}" style="height:46px;padding:0 20px;border-radius:23px;border:none;background:#b4502e;color:#fff;font-size:14px;font-weight:600">{{ confirmCta }}</button>
+                          </div>
+                        </div>
                       </sc-if>
                     </div>
                   </div>
@@ -666,6 +745,18 @@
                     </sc-if>
                   </div>
                 </sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isBandEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:64px 24px;border-radius:24px;border:1.5px dashed #ddd8ce;text-align:center">
+                <span style="font-family:'Material Symbols Rounded';font-size:40px;line-height:1;color:#c9c2b5">groups</span>
+                <span style="font:700 24px 'Bricolage Grotesque',sans-serif">Você ainda não está em uma banda</span>
+                <span style="font-size:15px;color:#6b665e">Procure uma banda com vaga para você ou crie a sua.</span>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+                  <button sc-camel-on-click="{{ goSearch }}" style="height:46px;padding:0 20px;border-radius:23px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Procurar bandas</button>
+                  <button sc-camel-on-click="{{ goCreate }}" style="height:46px;padding:0 20px;border-radius:23px;border:none;background:#1d1b18;color:#f7f5f0;font-size:14px;font-weight:600">Criar banda</button>
+                </div>
               </div>
             </sc-if>
 
