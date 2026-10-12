@@ -34,6 +34,11 @@ const ICO_P={
  'Outro':'<path d="M9 18V5.5l11-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>'};
 const ICO_A={'Violão':'Guitarra','Ukulele':'Guitarra','Cavaquinho':'Guitarra','Percussão':'Bateria','Piano':'Teclado','Acordeão':'Teclado'};
 const ico=(n,c)=>'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+(ICO_P[n]||ICO_P[ICO_A[n]]||ICO_P.Outro).replace(' class="k"',' fill="'+c+'"')+'</svg>');
+const dropOne=(a,v)=>{const i=a.lastIndexOf(v);return i<0?a:a.filter((_,j)=>j!==i);};
+// Resumo das vagas: "2× Guitarra, Voz".
+const vagaSummary=a=>{if(!a.length)return 'Nenhuma vaga aberta';const c={};a.forEach(v=>c[v]=(c[v]||0)+1);const n=a.length;return n+(n>1?' vagas: ':' vaga: ')+Object.entries(c).map(([v,k])=>(k>1?k+'× ':'')+v).join(', ');};
+// Chips de vaga com contador: toque adiciona; − e + ajustam quantas vagas daquele instrumento.
+const vagaChipsFor=(list,update)=>INSTR.map(n=>{const k=list.filter(x=>x===n).length;return {label:n,ico:ico(n,k?'#f7f5f0':INK),off:!k,on:!!k,n:k,add:()=>update(a=>[...a,n]),sub:()=>update(a=>dropOne(a,n))};});
 const mc=v=>v>=85?OK:v>=65?'#8a6a1f':ACC;
 const chip=(label,on,onClick)=>({label,onClick,bg:on?INK:'#fff',fg:on?'#f7f5f0':INK,bd:on?INK:LINE});
 
@@ -125,7 +130,7 @@ class Component extends DCLogic {
       mb={...mbRaw,roleUpper:(mbRaw.role==='owner'?'VOCÊ CRIOU ESTA BANDA':mbRaw.role==='trial'?'VOCÊ ESTÁ EM ENSAIO TESTE':'VOCÊ É MEMBRO'),
         memberCount:mbRaw.members.length,memberNames:mbRaw.members.map(m=>m.n.replace(' (você)','').split(' ')[0]).join(', '),
         membersV:mbRaw.members.map(m=>{const self=m.n.includes('(você)');return {...m,ico:ico(m.r,INK),pic:pic(m.i),hasTag:!!m.tag,canRemove:mbRaw.role==='owner'&&!self,
-          remove:()=>patchBand(mbRaw.id,b=>({...b,members:b.members.filter(x=>x.n!==m.n),vagas:b.vagas.includes(m.r)?b.vagas:[...b.vagas,m.r],msgs:[...b.msgs,{sys:true,t:m.n.split(' ')[0]+' saiu da banda. Vaga de '+m.r+' reaberta.'}]}))};}),
+          remove:()=>patchBand(mbRaw.id,b=>({...b,members:b.members.filter(x=>x.n!==m.n),vagas:[...b.vagas,m.r],msgs:[...b.msgs,{sys:true,t:m.n.split(' ')[0]+' saiu da banda. Vaga de '+m.r+' reaberta.'}]}))};}),
         vagasV:mbRaw.vagas.map(v=>({label:v,ico:ico(v,ACC)})),
         isOwner:mbRaw.role==='owner',canLeave:mbRaw.role!=='owner',noReqs:pr.length===0,
         hasReqs:mbRaw.role==='owner'&&pr.length>0,pendN:pr.length,
@@ -137,7 +142,7 @@ class Component extends DCLogic {
           timeFit:!bs.length?'A banda ainda não definiu horário':ov?'Livre no horário de ensaio da banda':'Não está livre no horário da banda',timeFg:!bs.length?'#6b665e':ov?OK:'#7a5a12',
           cal:PER.flatMap(p=>[{isLabel:true,isCell:false,label:p[0]},...DAYS.map(dd=>{const k=dd+'-'+p,b1=bs.includes(k),me=(r.avail||[]).includes(k);return {isLabel:false,isCell:true,bg:b1?INK:me?'#e3efe6':'#f3efe8',bd:b1?(me?'#7fc493':INK):me?'#9cc8a8':'#efebe4'};})]),
           decline:()=>patchBand(mbRaw.id,b=>({...b,reqs:b.reqs.map(x=>x.id===r.id?{...x,status:'declined'}:x)})),
-          accept:()=>patchBand(mbRaw.id,b=>({...b,reqs:b.reqs.map(x=>x.id===r.id?{...x,status:'accepted'}:x),vagas:b.vagas.filter(v=>v!==r.r),members:[...b.members,{i:r.i,n:r.n,r:r.r,lvl:r.lvl,tag:''}],msgs:[...b.msgs,{sys:true,t:r.n.split(' ')[0]+' entrou na banda.'},{a:r.n.split(' ')[0],i:r.i,t:r.first}]}))};}),
+          accept:()=>patchBand(mbRaw.id,b=>({...b,reqs:b.reqs.map(x=>x.id===r.id?{...x,status:'accepted'}:x),vagas:dropOne(b.vagas,r.r),members:[...b.members,{i:r.i,n:r.n,r:r.r,lvl:r.lvl,tag:''}],msgs:[...b.msgs,{sys:true,t:r.n.split(' ')[0]+' entrou na banda.'},{a:r.n.split(' ')[0],i:r.i,t:r.first}]}))};}),
         cal:PER.flatMap(p=>[{isLabel:true,isCell:false,label:p[0]},...DAYS.map(dd=>{const k=dd+'-'+p,on=(mbRaw.slots||[]).includes(k);return {isLabel:false,isCell:true,bg:on?INK:'#f3efe8',bd:on?INK:'#efebe4'};})]),
         hasRep:!!(mbRaw.rep&&mbRaw.rep.length),noRep:!(mbRaw.rep&&mbRaw.rep.length),repCount:(mbRaw.rep||[]).length+' músicas',repV:(mbRaw.rep||[]).map((r,k)=>({...r,n:String(k+1).padStart(2,'0')})),
         rehPending:!mbRaw.reh.confirmed,rehConfirmed:mbRaw.reh.confirmed,rehBd:mbRaw.reh.confirmed?'#e6e2da':ACC}; }
@@ -223,11 +228,11 @@ class Component extends DCLogic {
 
       isBandView:st.bandsView==='band'&&!!mbRaw,
       isBandMain:sub==='band',isBandReqs:sub==='reqs',isBandCfg:sub==='cfg',isBandEmpty:st.bandsView==='band'&&!mbRaw,goSearch:()=>this.go('search'),
-      bandSubs:[['band','Banda'],...(isOwner?[['reqs','Solicitações']]:[]),['cfg','Configurações']].map(([k,label])=>{const on=sub===k,n=mbRaw?mbRaw.reqs.filter(r=>r.status==='pending').length:0;return {label,bg:on?'#f7f5f0':'transparent',fg:on?INK:'#c9c2b5',badge:k==='reqs'&&n>0,n,onClick:()=>k==='cfg'?openCfg():this.setState({bandSub:k})};}),
+      bandSubs:[['band','Banda'],...(isOwner?[['reqs','Solicitações']]:[]),['cfg','Configurações']].map(([k,label])=>{const on=sub===k,n=mbRaw?mbRaw.reqs.filter(r=>r.status==='pending').length:0;return {label,isText:k!=='cfg',isIcon:k==='cfg',px:k==='cfg'?'9px':'16px',bg:on?'#f7f5f0':'transparent',fg:on?INK:'#c9c2b5',badge:k==='reqs'&&n>0,n,onClick:()=>k==='cfg'?openCfg():this.setState({bandSub:k})};}),
       eName:ed.name||'',onEName:e=>setEd({name:e.target.value}),
       eGenreChips:[...new Set([...GENRES,...(ed.genres||[])])].map(g=>chip(g,(ed.genres||[]).includes(g),()=>togEd('genres',g))),
       eGoalOpts:GOALS.map(l=>({...l,bd:ed.goal===l.label?INK:'#e6e2da',onClick:()=>setEd({goal:l.label})})),
-      eVagaChips:INSTR.map(x=>{const on=(ed.vagas||[]).includes(x);return {...chip(x,on,()=>togEd('vagas',x)),ico:ico(x,on?'#f7f5f0':INK)};}),
+      eVagaChips:vagaChipsFor(ed.vagas||[],f=>this.setState(s=>({bEdit:{...s.bEdit,vagas:f(s.bEdit.vagas||[])},cfgSaved:false,editErr:''}))),eVagaSummary:vagaSummary(ed.vagas||[]),
       eAvailCells:PER.flatMap(p=>[{isLabel:true,isCell:false,label:p},...DAYS.map(d=>{const k=d+'-'+p,on=(ed.slots||[]).includes(k);return {isLabel:false,isCell:true,bg:on?INK:'#fff',bd:on?INK:LINE,onClick:()=>togEd('slots',k)};})]),
       eHasRep:!!(ed.rep&&ed.rep.length),eRepV:(ed.rep||[]).map((r,k)=>({...r,n:String(k+1).padStart(2,'0'),remove:()=>this.setState(s=>({bEdit:{...s.bEdit,rep:s.bEdit.rep.filter((_,j)=>j!==k)},cfgSaved:false}))})),
       eSong:ed.song||'',eArtist:ed.artist||'',onESong:e=>setEd({song:e.target.value}),onEArtist:e=>setEd({artist:e.target.value}),
@@ -250,14 +255,14 @@ isCreate:st.bandsView==='create',createBg:st.bandsView==='create'?'#fff':'transp
       draft:st.draft,onDraft:e=>this.setState({draft:e.target.value}),onKey:e=>{if(e.key==='Enter')send();},send,
 
       cName:st.cName,onCName:e=>this.setState({cName:e.target.value}),
-      cMyInsts:done.map(x=>{const n=this.instName(x),on=st.cInst===n;return {name:n,level:(LEVELS.find(l=>l.short===x.level)||{}).label||x.level,ico:ico(n,INK),bd:on?INK:'#e6e2da',bg:on?'#f3efe8':'#fff',checkC:on?INK:'transparent',onClick:()=>this.setState(s=>({cInst:n,cVagas:s.cVagas.filter(v=>v!==n)}))};}),
+      cMyInsts:done.map(x=>{const n=this.instName(x),on=st.cInst===n;return {name:n,level:(LEVELS.find(l=>l.short===x.level)||{}).label||x.level,ico:ico(n,INK),bd:on?INK:'#e6e2da',bg:on?'#f3efe8':'#fff',checkC:on?INK:'transparent',onClick:()=>this.setState(s=>({cInst:n}))};}),
       cAddOpen:!!st.cAdd,cAddClosed:!st.cAdd,cOpenAdd:()=>this.setState({cAdd:{name:null,level:null}}),cCancelAdd:()=>this.setState({cAdd:null}),
       cNewChips:INSTR.filter(n=>!done.some(x=>x.name===n)).map(n=>{const on=st.cAdd&&st.cAdd.name===n;return {label:n,ico:ico(n,on?'#f7f5f0':INK),bg:on?INK:'#fff',fg:on?'#f7f5f0':INK,bd:on?INK:LINE,onClick:()=>this.setState(s=>({cAdd:{...s.cAdd,name:n}}))};}),
       cNewHasName:!!(st.cAdd&&st.cAdd.name),cNewName:st.cAdd&&st.cAdd.name||'',
       cNewLevels:LEVELS.map(l=>({label:l.label,shortUpper:l.short.toUpperCase(),bd:st.cAdd&&st.cAdd.level===l.short?INK:'#e6e2da',onClick:()=>this.setState(s=>({cAdd:{...s.cAdd,level:l.short}}))})),
       cAddBg:st.cAdd&&st.cAdd.name&&st.cAdd.level?INK:'#d9d3c8',
-      cConfirmAdd:()=>{const a=st.cAdd;if(!a||!a.name||!a.level)return;this.setState(s=>({insts:[...s.insts.filter(x=>x.name&&x.level),{id:Date.now(),name:a.name,custom:'',level:a.level}],cInst:a.name,cAdd:null,cVagas:s.cVagas.filter(v=>v!==a.name)}));},
-      vagaChips:INSTR.map(x=>{const mine=x===st.cInst;return {...chip(x,st.cVagas.includes(x),()=>{if(!mine)toggleArr('cVagas',x);}),ico:ico(x,st.cVagas.includes(x)?'#f7f5f0':INK),op:mine?.35:1};}),
+      cConfirmAdd:()=>{const a=st.cAdd;if(!a||!a.name||!a.level)return;this.setState(s=>({insts:[...s.insts.filter(x=>x.name&&x.level),{id:Date.now(),name:a.name,custom:'',level:a.level}],cInst:a.name,cAdd:null}));},
+      vagaChips:vagaChipsFor(st.cVagas,f=>this.setState(s=>({cVagas:f(s.cVagas)}))),cVagaSummary:vagaSummary(st.cVagas),
       cGoalOpts:GOALS.map(l=>({...l,bd:st.cGoal===l.label?INK:'#e6e2da',onClick:()=>this.setState({cGoal:l.label})})),
       cHasGoal:!!st.cGoal,cGoalText:st.cGoalText,onCGoalText:e=>this.setState({cGoalText:e.target.value}),
       cAvailCells:PER.flatMap(p=>[{isLabel:true,isCell:false,label:p},...DAYS.map(d=>{const k=d+'-'+p,on=!!st.cAvail[k];return {isLabel:false,isCell:true,bg:on?INK:'#fff',bd:on?INK:LINE,onClick:()=>this.setState(s=>({cAvail:{...s.cAvail,[k]:!s.cAvail[k]}}))};})]),
@@ -272,7 +277,7 @@ isCreate:st.bandsView==='create',createBg:st.bandsView==='create'?'#fff':'transp
           rep:st.cRep,goalText:st.cGoalText,
           members:[{i:'LM',n:'Lucas Martins (você)',r:st.cInst,lvl:this.lvlFor(st.cInst),tag:'Líder'}],
           reh:{label:'PRÓXIMO ENSAIO',when,where:'A definir',confirmed:true},
-          msgs:[{sys:true,t:'Banda criada. Vagas publicadas: '+(st.cVagas.join(', ')||'nenhuma')+'.'}]};
+          msgs:[{sys:true,t:'Banda criada. '+vagaSummary(st.cVagas)+'.'}]};
         this.setState(s=>({myBands:[...s.myBands,nb],myBandId:id,bandsView:'band',cName:'',cRep:[],cGoal:null,cGoalText:'',cAvail:{}})); }
     };
   }
