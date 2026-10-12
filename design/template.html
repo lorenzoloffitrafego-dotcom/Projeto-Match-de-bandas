@@ -485,13 +485,58 @@
 
             <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
               <button sc-camel-on-click="{{ backToSearch }}" style="align-self:flex-start;display:flex;align-items:center;gap:4px;height:38px;padding:0 14px 0 8px;border-radius:19px;border:1px solid #ddd8ce;background:#fff;font-size:14px;font-weight:500;color:#1d1b18"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">chevron_left</span>Procurar bandas</button>
-              <div style="display:flex;flex-direction:column;gap:8px">
-                <h1 style="margin:0;font:700 clamp(38px,4.5vw,56px)/1.02 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em">{{ band.name }}</h1>
-                <span style="font-size:16px;color:#4a463f">{{ band.genres }}</span>
+              <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;padding:26px 28px;border-radius:24px;background:#1d1b18;color:#f7f5f0">
+                <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+                  <span style="font:700 clamp(32px,3.8vw,48px)/1.02 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">{{ band.name }}</span>
+                  <span style="font-size:16px;color:#c9c2b5">{{ band.genres }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;max-width:360px">
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+                    <sc-if value="{{ showDismiss }}" hint-placeholder-val="{{ true }}">
+                      <button sc-camel-on-click="{{ dismiss }}" style="height:44px;padding:0 18px;border-radius:22px;border:1px solid #4a463f;background:transparent;color:#f7f5f0;font-size:14px;font-weight:600">Não tenho interesse</button>
+                    </sc-if>
+                    <button sc-camel-on-click="{{ requestJoin }}" style="height:44px;padding:0 22px;border-radius:22px;border:none;background:{{ ctaBg }};color:{{ ctaFg }};font-size:15px;font-weight:600">{{ ctaLabel }}</button>
+                  </div>
+                  <span style="font-size:12px;line-height:1.45;color:#c9c2b5;text-align:right">{{ ctaNote }}</span>
+                </div>
               </div>
-              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
-                <div style="display:flex;flex-direction:column;gap:14px;padding:22px;border-radius:20px;background:#fff;border:1px solid #e6e2da">
-                  <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#6b665e"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#b4502e">calendar_month</span>Ensaio</span>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:16px;align-items:start">
+                <div style="min-width:0;display:flex;flex-direction:column;gap:16px;padding:24px;border-radius:22px;background:#fff;border:1px solid #e6e2da">
+                  <div style="display:flex;align-items:center;gap:14px">
+                    <span style="width:52px;height:52px;border-radius:26px;background:#fbe4da;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:26px;height:26px;display:block;background:center / contain no-repeat url({{ band.icoAcc }})"></span></span>
+                    <span style="display:flex;flex-direction:column;gap:2px"><span style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.06em;color:#8e3b1f">VAGA ABERTA</span><span style="font:700 24px/1.1 'Bricolage Grotesque',sans-serif">{{ band.vaga }}</span></span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;padding-top:16px;border-top:1px solid #efebe4">
+                    <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#6b665e"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#b4502e">signal_cellular_alt</span>Nível esperado</span>
+                    <span style="font:700 20px/1.15 'Bricolage Grotesque',sans-serif">{{ band.req }}</span>
+                    <span style="font-size:14px;line-height:1.4;color:#4a463f">{{ band.reqDesc }}</span>
+                    <span style="align-self:flex-start;display:flex;align-items:center;gap:6px;padding:5px 10px 5px 8px;border-radius:10px;background:{{ band.fitLevel.bg }};color:{{ band.fitLevel.fg }};font-size:12px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">{{ band.fitLevel.icon }}</span>{{ band.fitLevel.text }}</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;padding-top:16px;border-top:1px solid #efebe4">
+                    <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#6b665e"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#b4502e">flag</span>Objetivo</span>
+                    <span style="font:700 20px/1.15 'Bricolage Grotesque',sans-serif">{{ band.goal }}</span>
+                    <span style="font-size:14px;line-height:1.4;color:#4a463f">{{ band.goalDesc }}</span>
+                    <span style="align-self:flex-start;display:flex;align-items:center;gap:6px;padding:5px 10px 5px 8px;border-radius:10px;background:{{ band.fitGoal.bg }};color:{{ band.fitGoal.fg }};font-size:12px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">{{ band.fitGoal.icon }}</span>{{ band.fitGoal.text }}</span>
+                  </div>
+                </div>
+                <div style="min-width:0;display:flex;flex-direction:column;gap:14px;padding:24px;border-radius:22px;background:#fff;border:1px solid #e6e2da">
+                  <span style="display:flex;justify-content:space-between;align-items:baseline"><span style="display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#b4502e">groups</span>Integrantes</span><span style="font-size:13px;color:#6b665e">{{ band.memberCount }}</span></span>
+                  <sc-for list="{{ band.membersV }}" as="m" hint-placeholder-count="3">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <span style="position:relative;width:44px;height:44px;flex:none"><img sc-camel-src="{{ m.pic }}" alt="" style="display:block;width:44px;height:44px;border-radius:22px;background:#efe9df;object-fit:cover;flex:none"><span style="position:absolute;right:-3px;bottom:-3px;width:20px;height:20px;border-radius:10px;background:#fff;border:1px solid #e6e2da;display:flex;align-items:center;justify-content:center"><span style="width:12px;height:12px;display:block;background:center / contain no-repeat url({{ m.ico }})"></span></span></span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:15px;font-weight:600">{{ m.n }}</span><span style="font-size:13px;color:#6b665e">{{ m.r }}</span></span>
+                      <sc-if value="{{ m.lead }}" hint-placeholder-val="{{ false }}"><span style="padding:4px 9px;border-radius:10px;background:#efe9df;font-size:11px;font-weight:700;color:#4a463f">LÍDER</span></sc-if>
+                    </div>
+                  </sc-for>
+                  <div style="display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:#fbe4da;border:1.5px dashed #b4502e">
+                    <span style="width:44px;height:44px;border-radius:22px;background:#fff;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:24px;height:24px;display:block;background:center / contain no-repeat url({{ band.icoAcc }})"></span></span>
+                    <span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.06em;color:#8e3b1f">FALTA NA BANDA</span><span style="font:700 20px/1.1 'Bricolage Grotesque',sans-serif;color:#1d1b18">{{ band.vaga }}</span></span>
+                  </div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:16px;align-items:start">
+                <div style="display:flex;flex-direction:column;gap:14px;min-width:0;padding:22px;border-radius:22px;background:#fff;border:1px solid #e6e2da">
+                  <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#6b665e"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#b4502e">calendar_month</span>Horários da banda</span>
                   <div style="display:grid;grid-template-columns:20px repeat(7,minmax(0,1fr));gap:4px;align-items:center">
                     <sc-for list="{{ calHead }}" as="h" hint-placeholder-count="8"><span style="font-size:11px;font-weight:600;color:#6b665e;text-align:center">{{ h }}</span></sc-for>
                     <sc-for list="{{ band.cal }}" as="a" hint-placeholder-count="24">
@@ -505,26 +550,7 @@
                   </div>
                   <span style="margin-top:auto;align-self:flex-start;display:flex;align-items:center;gap:6px;padding:5px 10px 5px 8px;border-radius:10px;background:{{ band.fitTime.bg }};color:{{ band.fitTime.fg }};font-size:12px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">{{ band.fitTime.icon }}</span>{{ band.fitTime.text }}</span>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:14px;padding:22px;border-radius:20px;background:#fff;border:1px solid #e6e2da">
-                  <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#6b665e"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#b4502e">signal_cellular_alt</span>Nível esperado</span>
-                  <span style="display:flex;flex-direction:column;gap:4px">
-                    <span style="font:700 26px/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em">{{ band.req }}</span>
-                    <span style="font-size:14px;line-height:1.4;color:#4a463f;text-wrap:pretty">{{ band.reqDesc }}</span>
-                  </span>
-                  <span style="margin-top:auto;align-self:flex-start;display:flex;align-items:center;gap:6px;padding:5px 10px 5px 8px;border-radius:10px;background:{{ band.fitLevel.bg }};color:{{ band.fitLevel.fg }};font-size:12px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">{{ band.fitLevel.icon }}</span>{{ band.fitLevel.text }}</span>
-                </div>
-                <div style="display:flex;flex-direction:column;gap:14px;padding:22px;border-radius:20px;background:#fff;border:1px solid #e6e2da">
-                  <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#6b665e"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#b4502e">flag</span>Objetivo</span>
-                  <span style="display:flex;flex-direction:column;gap:4px">
-                    <span style="font:700 26px/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em">{{ band.goal }}</span>
-                    <span style="font-size:14px;line-height:1.4;color:#4a463f;text-wrap:pretty">{{ band.goalDesc }}</span>
-                  </span>
-                  <span style="margin-top:auto;align-self:flex-start;display:flex;align-items:center;gap:6px;padding:5px 10px 5px 8px;border-radius:10px;background:{{ band.fitGoal.bg }};color:{{ band.fitGoal.fg }};font-size:12px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">{{ band.fitGoal.icon }}</span>{{ band.fitGoal.text }}</span>
-                </div>
-              </div>
-
-              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;align-items:start">
-                <div style="display:flex;flex-direction:column;gap:14px;padding:24px 26px;border-radius:22px;background:#1d1b18;color:#f7f5f0">
+                <div style="min-width:0;display:flex;flex-direction:column;gap:14px;padding:24px 26px;border-radius:22px;background:#1d1b18;color:#f7f5f0">
                   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
                     <span style="display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#e8774f">queue_music</span>Repertório</span>
                     <sc-if value="{{ band.hasRep }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px;color:#c9c2b5">{{ band.repCount }}</span></sc-if>
@@ -544,30 +570,6 @@
                     <span style="font-size:14px;line-height:1.5;color:#c9c2b5">A banda ainda não definiu o repertório.</span>
                   </sc-if>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:14px;padding:24px;border-radius:22px;background:#fff;border:1px solid #e6e2da">
-                  <span style="display:flex;justify-content:space-between;align-items:baseline"><span style="display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#b4502e">groups</span>Integrantes</span><span style="font-size:13px;color:#6b665e">{{ band.memberCount }}</span></span>
-                  <sc-for list="{{ band.membersV }}" as="m" hint-placeholder-count="3">
-                    <div style="display:flex;align-items:center;gap:12px">
-                      <span style="position:relative;width:44px;height:44px;flex:none"><img sc-camel-src="{{ m.pic }}" alt="" style="display:block;width:44px;height:44px;border-radius:22px;background:#efe9df;object-fit:cover;flex:none"><span style="position:absolute;right:-3px;bottom:-3px;width:20px;height:20px;border-radius:10px;background:#fff;border:1px solid #e6e2da;display:flex;align-items:center;justify-content:center"><span style="width:12px;height:12px;display:block;background:center / contain no-repeat url({{ m.ico }})"></span></span></span>
-                      <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:15px;font-weight:600">{{ m.n }}</span><span style="font-size:13px;color:#6b665e">{{ m.r }}</span></span>
-                      <sc-if value="{{ m.lead }}" hint-placeholder-val="{{ false }}"><span style="padding:4px 9px;border-radius:10px;background:#efe9df;font-size:11px;font-weight:700;color:#4a463f">LÍDER</span></sc-if>
-                    </div>
-                  </sc-for>
-                  <div style="display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:#fbe4da;border:1.5px dashed #b4502e">
-                    <span style="width:44px;height:44px;border-radius:22px;background:#fff;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:24px;height:24px;display:block;background:center / contain no-repeat url({{ band.icoAcc }})"></span></span>
-                    <span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.06em;color:#8e3b1f">FALTA NA BANDA</span><span style="font:700 20px/1.1 'Bricolage Grotesque',sans-serif;color:#1d1b18">{{ band.vaga }}</span></span>
-                  </div>
-                </div>
-              </div>
-
-              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 24px">
-                <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%;max-width:560px">
-                  <sc-if value="{{ showDismiss }}" hint-placeholder-val="{{ true }}">
-                    <button sc-camel-on-click="{{ dismiss }}" style="flex:1 1 200px;height:56px;border-radius:28px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:16px;font-weight:600">Não tenho interesse</button>
-                  </sc-if>
-                  <button sc-camel-on-click="{{ requestJoin }}" style="flex:1 1 200px;height:56px;border-radius:28px;border:none;background:{{ ctaBg }};color:{{ ctaFg }};font-size:16px;font-weight:600">{{ ctaLabel }}</button>
-                </div>
-                <span style="font-size:12px;line-height:1.45;color:#6b665e;text-align:center">{{ ctaNote }}</span>
               </div>
             </sc-if>
           </div>
