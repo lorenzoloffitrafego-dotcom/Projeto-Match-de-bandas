@@ -348,7 +348,7 @@
                 </div>
                 <div style="display:flex;gap:4px;padding:4px;border-radius:22px;background:#efe9df">
                   <sc-for list="{{ searchSubs }}" as="s" hint-placeholder-count="2">
-                    <button sc-camel-on-click="{{ s.onClick }}" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 16px;border:none;border-radius:19px;background:{{ s.bg }};color:{{ s.fg }};box-shadow:{{ s.sh }};font-size:14px;font-weight:600;white-space:nowrap">{{ s.label }}<span style="font:700 12px 'JetBrains Mono',monospace;color:#6b665e">{{ s.n }}</span></button>
+                    <button sc-camel-on-click="{{ s.onClick }}" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 16px;border:none;border-radius:19px;background:{{ s.bg }};color:{{ s.fg }};box-shadow:{{ s.sh }};font-size:14px;font-weight:600;white-space:nowrap">{{ s.label }}<span style="font:700 12px 'JetBrains Mono',monospace;color:#6b665e">{{ s.n }}</span><sc-if value="{{ s.badge }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:10px;background:#d64545;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ s.badgeN }}</span></sc-if></button>
                   </sc-for>
                 </div>
               </div>
@@ -404,12 +404,13 @@
               </sc-if>
 
               <sc-if value="{{ isSentSub }}" hint-placeholder-val="{{ false }}">
+                <sc-if value="{{ cListOpen }}" hint-placeholder-val="{{ true }}">
                 <div style="display:flex;flex-direction:column;gap:12px">
                   <sc-for list="{{ sentList }}" as="s" hint-placeholder-count="2">
                     <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 20px;background:#fff;border:1px solid #e6e2da;border-radius:20px">
                       <span style="width:52px;height:52px;border-radius:16px;background:#efe9df;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:26px;height:26px;display:block;background:center / contain no-repeat url({{ s.ico }})"></span></span>
                       <span style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:3px">
-                        <span style="font:700 19px/1.15 'Bricolage Grotesque',sans-serif">{{ s.name }}</span>
+                        <span style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:700 19px/1.15 'Bricolage Grotesque',sans-serif">{{ s.name }}</span><sc-if value="{{ s.isChatting }}" hint-placeholder-val="{{ false }}"><button sc-camel-on-click="{{ s.openChat }}" style="display:flex;align-items:center;gap:6px;height:32px;padding:0 8px 0 10px;border-radius:16px;border:none;background:#1d1b18;color:#f7f5f0;font-size:13px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">chat</span>Conversa<sc-if value="{{ s.hasUnread }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:10px;background:#d64545;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ s.unreadN }}</span></sc-if></button></sc-if></span>
                         <span style="font-size:13px;color:#6b665e">{{ s.meta }}</span>
                       </span>
                       <span style="padding:6px 12px;border-radius:12px;background:{{ s.sBg }};color:{{ s.sFg }};font-size:13px;font-weight:600;white-space:nowrap">{{ s.statusLabel }}</span>
@@ -420,7 +421,7 @@
                           <button sc-camel-on-click="{{ s.simulate }}" title="Só no protótipo" style="height:40px;padding:0 14px;border-radius:20px;border:1px dashed #b4502e;background:transparent;color:#b4502e;font-size:13px;font-weight:600">{{ s.simLabel }}</button>
                         </sc-if>
                         <sc-if value="{{ s.isChatting }}" hint-placeholder-val="{{ false }}">
-                          <button sc-camel-on-click="{{ s.openChat }}" style="display:flex;align-items:center;gap:6px;height:40px;padding:0 16px 0 12px;border-radius:20px;border:none;background:#1d1b18;color:#f7f5f0;font-size:14px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">chat</span>Conversa</button>
+                          
                           <button sc-camel-on-click="{{ s.simulate }}" title="Só no protótipo" style="height:40px;padding:0 14px;border-radius:20px;border:1px dashed #b4502e;background:transparent;color:#b4502e;font-size:13px;font-weight:600">{{ s.simLabel }}</button>
                         </sc-if>
                         <sc-if value="{{ s.isAccepted }}" hint-placeholder-val="{{ false }}">
@@ -437,25 +438,10 @@
                   </sc-if>
                 </div>
               </sc-if>
-
-              <sc-if value="{{ isChatsSub }}" hint-placeholder-val="{{ false }}">
-                <sc-if value="{{ cNoChats }}" hint-placeholder-val="{{ false }}">
-                  <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:56px 24px;border-radius:20px;border:1.5px dashed #ddd8ce;text-align:center;color:#6b665e">
-                    <span style="font-family:'Material Symbols Rounded';font-size:36px;line-height:1;color:#c9c2b5">chat</span>
-                    <span style="font-size:15px">Nenhuma conversa ainda. Quando um líder chamar você pra conversar, ela aparece aqui.</span>
-                  </div>
-                </sc-if>
-                <sc-if value="{{ cHasChat }}" hint-placeholder-val="{{ true }}">
-                  <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
-                    <div style="flex:1 1 240px;max-width:340px;display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:22px;background:#fff;border:1px solid #e6e2da">
-                      <sc-for list="{{ cChats }}" as="c" hint-placeholder-count="1">
-                        <button sc-camel-on-click="{{ c.open }}" style="display:flex;align-items:center;gap:12px;padding:10px;border:none;border-radius:14px;background:{{ c.bg }};text-align:left;color:#1d1b18">
-                          <img sc-camel-src="{{ c.pic }}" alt="" style="display:block;width:44px;height:44px;border-radius:22px;background:#efe9df;object-fit:cover;flex:none">
-                          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:700">{{ c.name }}</span><span style="font-size:12px;color:#6b665e">{{ c.sub }}</span><span style="font-size:13px;color:#4a463f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.last }}</span></span>
-                        </button>
-                      </sc-for>
-                    </div>
-                    <div style="flex:3 1 360px;min-width:0;height:560px;display:flex;flex-direction:column;border-radius:22px;background:#fff;border:1px solid #e6e2da;overflow:hidden">
+                <sc-if value="{{ cHasChat }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:12px">
+                    <div><button sc-camel-on-click="{{ closeCChat }}" style="display:flex;align-items:center;gap:4px;padding:0;border:none;background:transparent;color:#1d1b18;font-size:14px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">chevron_left</span>Solicitações enviadas</button></div>
+                    <div style="display:flex"><div style="flex:3 1 360px;min-width:0;height:560px;display:flex;flex-direction:column;border-radius:22px;background:#fff;border:1px solid #e6e2da;overflow:hidden">
                         <div style="flex:none;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid #efebe4">
                           <img sc-camel-src="{{ cChat.pic }}" alt="" style="display:block;width:42px;height:42px;border-radius:21px;background:#efe9df;object-fit:cover;flex:none">
                           <span style="flex:1 1 160px;min-width:0;display:flex;flex-direction:column"><span style="font-size:16px;font-weight:700">{{ cChat.title }}</span><span style="font-size:13px;color:#6b665e">{{ cChat.sub }}</span></span>
@@ -477,10 +463,11 @@
                           <input value="{{ cChat.draft }}" sc-camel-on-change="{{ cChat.onDraft }}" sc-camel-on-key-down="{{ cChat.onKey }}" placeholder="Escreva uma mensagem" style="flex:1;min-width:0;height:46px;border-radius:23px;border:1px solid #ddd8ce;background:#fff;padding:0 18px;font-size:15px;color:#1d1b18;outline:none">
                           <button sc-camel-on-click="{{ cChat.send }}" aria-label="Enviar" style="width:46px;height:46px;border-radius:23px;border:none;background:#1d1b18;color:#f7f5f0;font-family:'Material Symbols Rounded';font-size:22px;flex:none">send</button>
                         </div>
-                      </div>
+                      </div></div>
                   </div>
                 </sc-if>
               </sc-if>
+
             </sc-if>
 
             <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
@@ -880,7 +867,7 @@
                           </div>
                           <div style="display:flex;gap:8px;flex-wrap:wrap">
                             <button sc-camel-on-click="{{ q.decline }}" style="height:42px;padding:0 18px;border-radius:21px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Recusar</button>
-                            <button sc-camel-on-click="{{ q.talk }}" style="display:flex;align-items:center;gap:6px;height:42px;padding:0 18px 0 14px;border-radius:21px;border:1px solid #1d1b18;background:#fff;color:#1d1b18;font-size:14px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">chat</span>{{ q.talkLabel }}</button>
+                            <button sc-camel-on-click="{{ q.talk }}" style="display:flex;align-items:center;gap:6px;height:42px;padding:0 18px 0 14px;border-radius:21px;border:1px solid #1d1b18;background:#fff;color:#1d1b18;font-size:14px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">chat</span>{{ q.talkLabel }}<sc-if value="{{ q.hasUnread }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:10px;background:#d64545;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ q.unreadN }}</span></sc-if></button>
                             <button sc-camel-on-click="{{ q.accept }}" style="height:42px;padding:0 20px;border-radius:21px;border:none;background:{{ q.acceptBg }};color:{{ q.acceptFg }};font-size:14px;font-weight:600">Aceitar</button>
                           </div>
                         </div>
@@ -935,13 +922,13 @@
                   </sc-if>
                   <sc-if value="{{ isReqChat }}" hint-placeholder-val="{{ false }}">
                     <div style="display:flex;flex-direction:column;gap:12px">
-                      <div><button sc-camel-on-click="{{ closeChat }}" style="display:flex;align-items:center;gap:4px;padding:0;border:none;background:transparent;color:#1d1b18;font-size:14px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">chevron_left</span>Solicitações</button></div>
-                      <sc-if value="{{ lChat.vagaFull }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:#f6ecd2;color:#7a5a12;font-size:13px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">info</span>{{ lChat.fullText }}</span></sc-if>
+                      
+                      
                       <div style="display:flex"><div style="flex:3 1 360px;min-width:0;height:560px;display:flex;flex-direction:column;border-radius:22px;background:#fff;border:1px solid #e6e2da;overflow:hidden">
                         <div style="flex:none;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid #efebe4">
                           <img sc-camel-src="{{ lChat.pic }}" alt="" style="display:block;width:42px;height:42px;border-radius:21px;background:#efe9df;object-fit:cover;flex:none">
                           <span style="flex:1 1 160px;min-width:0;display:flex;flex-direction:column"><span style="font-size:16px;font-weight:700">{{ lChat.title }}</span><span style="font-size:13px;color:#6b665e">{{ lChat.sub }}</span></span>
-                          <div style="display:flex;gap:8px"><button sc-camel-on-click="{{ lChat.decline }}" style="height:38px;padding:0 16px;border-radius:19px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Recusar</button><button sc-camel-on-click="{{ lChat.accept }}" style="height:38px;padding:0 18px;border-radius:19px;border:none;background:{{ lChat.acceptBg }};color:{{ lChat.acceptFg }};font-size:14px;font-weight:600">Aceitar na banda</button></div>
+                          <button sc-camel-on-click="{{ closeChat }}" style="display:flex;align-items:center;gap:4px;height:38px;padding:0 16px 0 10px;border-radius:19px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">chevron_left</span>Voltar às solicitações</button>
                         </div>
                         <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:20px;background:#fbfaf7">
                           <sc-for list="{{ lChat.msgs }}" as="m" hint-placeholder-count="2">
