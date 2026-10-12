@@ -1,4 +1,4 @@
-"""Remonta index.html a partir de design/template.html, design/photos.js e design/app.js.
+"""Remonta index.html a partir de design/template.html, design/photos.js, design/songs.js e design/app.js.
 
 O index.html é o export autocontido do Claude Design. Este script troca só a
 marcação das telas e o script do protótipo dentro do bundle, mantendo o resto
@@ -20,7 +20,7 @@ i = lines.index('  ' + TEMPLATE_TAG) + 1
 template = json.loads(lines[i])
 
 body = (ROOT / 'design/template.html').read_text(encoding='utf-8')
-js = '\n'.join((ROOT / f'design/{n}').read_text(encoding='utf-8') for n in ('photos.js', 'app.js'))
+js = '\n'.join((ROOT / f'design/{n}').read_text(encoding='utf-8') for n in ('photos.js', 'songs.js', 'app.js'))
 
 start = template.index('</helmet>') + len('</helmet>')
 m = SCRIPT_RE.search(template, start)

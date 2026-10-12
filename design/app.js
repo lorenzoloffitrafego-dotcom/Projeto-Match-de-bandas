@@ -47,7 +47,7 @@ class Component extends DCLogic {
     insts:[{id:1,name:'Guitarra',custom:'',level:'Intermediário'}],openInst:null,otherGenre:'',customGenres:[],genreFocus:false,genreIdx:0,city:'São Paulo, SP',cityQuery:'São Paulo, SP',cityFocus:false,cityIdx:0,
     dismissed:[],genres:['Rock alternativo','Indie','Rock nacional'],goal:SG,avail:{'Ter-Noite':1,'Qui-Noite':1,'Sáb-Manhã':1},fTime:true,fGoal:false,fLvl:false,bandId:'fio',
     sent:[{bandId:'dom',status:'pending',date:'5 out'}],myBands:[G22],
-    cName:'',cVagas:['Bateria'],cGoal:null,cGoalText:'',cAvail:{},cRep:[],cSong:'',cArtist:'',cInst:'Guitarra',cAdd:null,draft:''};
+    cName:'',cVagas:['Bateria'],cGoal:null,cGoalText:'',cAvail:{},cRep:[],cInst:'Guitarra',cAdd:null,draft:''};
   scrollRef=React.createRef();
   key(s){ if(s.screen==='login') return 'login'; if(s.screen==='onb') return 'onb'; if(s.tab==='profile') return 'profile'; if(s.tab==='search') return s.searchView==='detail'?'detail':s.searchSub==='sent'?'sent':'search'; return s.bandsView==='create'?'create':'bands'; }
   componentDidUpdate(){ const s=this.state,k=[this.key(s),s.step,s.myBandId,s.bandId].join('|'); if(this.lastKey!==undefined&&this.lastKey!==k&&this.scrollRef.current) this.scrollRef.current.scrollTop=0; this.lastKey=k; }
@@ -129,7 +129,7 @@ class Component extends DCLogic {
     if(mbRaw){ const pr=mbRaw.reqs.filter(r=>r.status==='pending');
       mb={...mbRaw,roleUpper:(mbRaw.role==='owner'?'VOCÊ CRIOU ESTA BANDA':mbRaw.role==='trial'?'VOCÊ ESTÁ EM ENSAIO TESTE':'VOCÊ É MEMBRO'),
         memberCount:mbRaw.members.length,memberNames:mbRaw.members.map(m=>m.n.replace(' (você)','').split(' ')[0]).join(', '),
-        membersV:mbRaw.members.map(m=>{const self=m.n.includes('(você)');return {...m,ico:ico(m.r,INK),pic:pic(m.i),hasTag:!!m.tag,canRemove:mbRaw.role==='owner'&&!self,
+        membersV:mbRaw.members.map(m=>{const self=m.n.includes('(você)');return {...m,ico:ico(m.r,INK),pic:pic(m.i),hasTag:!!m.tag,
           remove:()=>patchBand(mbRaw.id,b=>({...b,members:b.members.filter(x=>x.n!==m.n),vagas:[...b.vagas,m.r],msgs:[...b.msgs,{sys:true,t:m.n.split(' ')[0]+' saiu da banda. Vaga de '+m.r+' reaberta.'}]}))};}),
         vagasV:mbRaw.vagas.map(v=>({label:v,ico:ico(v,ACC)})),
         isOwner:mbRaw.role==='owner',canLeave:mbRaw.role!=='owner',noReqs:pr.length===0,
@@ -148,18 +148,27 @@ class Component extends DCLogic {
         rehPending:!mbRaw.reh.confirmed,rehConfirmed:mbRaw.reh.confirmed,rehBd:mbRaw.reh.confirmed?'#e6e2da':ACC}; }
     const isOwner=!!mbRaw&&mbRaw.role==='owner';
     const sub=!mbRaw?'band':st.bandSub==='reqs'&&!isOwner?'band':(st.bandSub||'band');
-    const ed=st.bEdit||{};
-    const setEd=p=>this.setState(s=>({bEdit:{...s.bEdit,...p},cfgSaved:false,editErr:''}));
-    const togEd=(k,v)=>this.setState(s=>{const a=s.bEdit[k]||[];return {bEdit:{...s.bEdit,[k]:a.includes(v)?a.filter(x=>x!==v):[...a,v]},cfgSaved:false,editErr:''};});
-    const openCfg=()=>{if(!mbRaw)return;this.setState({bandSub:'cfg',cfgConfirm:false,cfgSaved:false,editErr:'',bEdit:{name:mbRaw.name,genres:mbRaw.genres.split(' · ').filter(g=>g&&g!=='—'),goal:mbRaw.goal,vagas:[...mbRaw.vagas],slots:[...(mbRaw.slots||[])],rep:[...(mbRaw.rep||[])],song:'',artist:''}});};
-    const eAddSong=()=>{const t=(ed.song||'').trim();if(!t)return;setEd({rep:[...(ed.rep||[]),{t,a:(ed.artist||'').trim()}],song:'',artist:''});};
-    const saveBand=()=>{const name=(ed.name||'').trim();if(!name)return this.setState({editErr:'Dê um nome para a banda.'});
-      const ck=DAYS.flatMap(d=>PER.map(p=>d+'-'+p)).filter(k=>ed.slots.includes(k));
-      patchBand(mbRaw.id,b=>({...b,name,genres:ed.genres.join(' · ')||'—',goal:ed.goal,vagas:ed.vagas,slots:ck,when:ck.length?ck.map(x=>x.replace('-',' ').toLowerCase()).join(', '):'A definir',rep:ed.rep}));
-      this.setState({cfgSaved:true,editErr:''});};
+    // Configurações da banda: cada tópico abre como um dropdown e as mudanças valem na hora.
+    const live=fn=>mbRaw&&patchBand(mbRaw.id,fn);
+    const openCfg=()=>{if(!mbRaw)return;this.setState({bandSub:'cfg',cfgOpen:null,cfgConfirm:false,memberConfirm:null});};
+    const bGenres=mbRaw?mbRaw.genres.split(' · ').filter(g=>g&&g!=='—'):[];
+    const bSlots=mbRaw?(mbRaw.slots||[]):[];
+    const slotText=k=>{const [d,per]=k.split('-');return d+' '+per.toLowerCase();};
+    const setSlots=a=>{const ck=DAYS.flatMap(d=>PER.map(p=>d+'-'+p)).filter(k=>a.includes(k));live(b=>({...b,slots:ck,when:ck.length?ck.map(slotText).join(', '):'A definir'}));};
+    const cfgRow=(k,icon,label,value,danger)=>{const on=st.cfgOpen===k;return {icon,label,value,isOpen:on,rot:on?'180deg':'0deg',ic:danger?ACC:'#6b665e',lc:danger?ACC:'#6b665e',
+      toggle:()=>this.setState(s=>({cfgOpen:s.cfgOpen===k?null:k,cfgConfirm:false,memberConfirm:null,nameDraft:k==='name'&&mbRaw?mbRaw.name:s.nameDraft}))};};
     const removeBand=()=>{if(!mbRaw)return;this.setState(s=>{const rest=s.myBands.filter(b=>b.id!==mbRaw.id);return {myBands:rest,myBandId:rest[0]?rest[0].id:null,bandSub:'band',cfgConfirm:false,sent:s.sent.filter(x=>x.bandId!==mbRaw.id)};});};
+    // Busca de músicas para o repertório: sugere do catálogo enquanto digita; um toque adiciona.
+    const songBox=(k,rep,add)=>{const q=st[k+'Q']||'',idx=st[k+'Idx']||0,nq=norm(q),have=new Set(rep.map(r=>norm(r.t)));
+      const list=nq?SONGS.filter(([t])=>!have.has(norm(t))).map(([t,a])=>{const nt=norm(t),na=norm(a);return [t,a,nt.startsWith(nq)?0:na.startsWith(nq)?1:nt.split(' ').some(w=>w.startsWith(nq))?2:nt.includes(nq)||na.includes(nq)?3:9];})
+        .filter(x=>x[2]<9).sort((x,y)=>x[2]-y[2]).slice(0,5).map(([t,a])=>({t,a,isCustom:false})):[];
+      if(nq&&!have.has(nq)&&!list.some(x=>norm(x.t)===nq)) list.push({t:q.trim(),a:'',isCustom:true});
+      const pickItem=x=>{add({t:x.t,a:x.a});this.setState({[k+'Q']:'',[k+'Idx']:0});};
+      const sugs=list.map((x,i)=>({...x,hasArtist:!!x.a,label:x.isCustom?'Adicionar “'+x.t+'”':x.t,icon:x.isCustom?'add':'music_note',bg:i===idx?'#f3efe8':'transparent',pick:e=>{e.preventDefault();pickItem(x);}}));
+      return {q,sugs,open:!!st[k+'F']&&sugs.length>0,
+        onInput:e=>this.setState({[k+'Q']:e.target.value,[k+'F']:true,[k+'Idx']:0}),onFocus:()=>this.setState({[k+'F']:true}),onBlur:()=>this.setState({[k+'F']:false}),
+        onKey:e=>{const n=list.length;if(e.key==='ArrowDown'){e.preventDefault();this.setState({[k+'Idx']:Math.min(n-1,idx+1)});}else if(e.key==='ArrowUp'){e.preventDefault();this.setState({[k+'Idx']:Math.max(0,idx-1)});}else if(e.key==='Enter'&&list[idx]){e.preventDefault();pickItem(list[idx]);}}};};
     const send=()=>{const t=st.draft.trim();if(!t||!mbRaw)return;this.setState({draft:''});patchBand(mbRaw.id,b=>({...b,msgs:[...b.msgs,{mine:true,t}]}));};
-    const addSong=()=>{const t=st.cSong.trim();if(!t)return;this.setState(s=>({cRep:[...s.cRep,{t,a:s.cArtist.trim()}],cSong:'',cArtist:''}));};
     const seg=(on)=>({bg:on?'#fff':'transparent',fg:on?INK:'#6b665e',sh:on?'0 1px 3px rgba(29,27,24,.14)':'none'});
     return {
       scrollRef:this.scrollRef,myPic:PHOTO.LM,
@@ -229,23 +238,28 @@ class Component extends DCLogic {
       isBandView:st.bandsView==='band'&&!!mbRaw,
       isBandMain:sub==='band',isBandReqs:sub==='reqs',isBandCfg:sub==='cfg',isBandEmpty:st.bandsView==='band'&&!mbRaw,goSearch:()=>this.go('search'),
       bandSubs:[['band','Banda'],...(isOwner?[['reqs','Solicitações']]:[]),['cfg','Configurações']].map(([k,label])=>{const on=sub===k,n=mbRaw?mbRaw.reqs.filter(r=>r.status==='pending').length:0;return {label,isText:k!=='cfg',isIcon:k==='cfg',px:k==='cfg'?'9px':'16px',bg:on?'#f7f5f0':'transparent',fg:on?INK:'#c9c2b5',badge:k==='reqs'&&n>0,n,onClick:()=>k==='cfg'?openCfg():this.setState({bandSub:k})};}),
-      eName:ed.name||'',onEName:e=>setEd({name:e.target.value}),
-      eGenreChips:[...new Set([...GENRES,...(ed.genres||[])])].map(g=>chip(g,(ed.genres||[]).includes(g),()=>togEd('genres',g))),
-      eGoalOpts:GOALS.map(l=>({...l,bd:ed.goal===l.label?INK:'#e6e2da',onClick:()=>setEd({goal:l.label})})),
-      eVagaChips:vagaChipsFor(ed.vagas||[],f=>this.setState(s=>({bEdit:{...s.bEdit,vagas:f(s.bEdit.vagas||[])},cfgSaved:false,editErr:''}))),eVagaSummary:vagaSummary(ed.vagas||[]),
-      eAvailCells:PER.flatMap(p=>[{isLabel:true,isCell:false,label:p},...DAYS.map(d=>{const k=d+'-'+p,on=(ed.slots||[]).includes(k);return {isLabel:false,isCell:true,bg:on?INK:'#fff',bd:on?INK:LINE,onClick:()=>togEd('slots',k)};})]),
-      eHasRep:!!(ed.rep&&ed.rep.length),eRepV:(ed.rep||[]).map((r,k)=>({...r,n:String(k+1).padStart(2,'0'),remove:()=>this.setState(s=>({bEdit:{...s.bEdit,rep:s.bEdit.rep.filter((_,j)=>j!==k)},cfgSaved:false}))})),
-      eSong:ed.song||'',eArtist:ed.artist||'',onESong:e=>setEd({song:e.target.value}),onEArtist:e=>setEd({artist:e.target.value}),
-      eAddSong,onERepKey:e=>{if(e.key==='Enter')eAddSong();},eAddSongBg:(ed.song||'').trim()?INK:'#d9d3c8',
-      saveBand,resetEdit:openCfg,eSaveBg:(ed.name||'').trim()?INK:'#d9d3c8',
-      cfgSaved:!!st.cfgSaved,hasEditErr:!!st.editErr,editErr:st.editErr||'',
-      dangerTitle:isOwner?'Excluir banda':'Sair da banda',
-      dangerText:isOwner?'Como líder, você pode excluir a banda. Ela some para todos os integrantes e as vagas deixam de aparecer na busca.':'Você deixa de fazer parte da banda e sua vaga volta a ficar aberta.',
-      dangerIcon:isOwner?'delete':'logout',dangerCta:isOwner?'Excluir banda':'Sair da banda',
-      noConfirm:!st.cfgConfirm,isConfirming:!!st.cfgConfirm,
-      confirmText:isOwner?'Tem certeza? Isso não pode ser desfeito.':'Tem certeza que quer sair de '+(mbRaw?mbRaw.name:'')+'?',
-      confirmCta:isOwner?'Sim, excluir banda':'Sim, sair da banda',
-      askDanger:()=>this.setState({cfgConfirm:true}),cancelDanger:()=>this.setState({cfgConfirm:false}),doDanger:removeBand,
+      cName2:st.nameDraft||'',onNameDraft:e=>{const v=e.target.value;this.setState({nameDraft:v});if(v.trim())live(b=>({...b,name:v.trim()}));},
+      cfgName:cfgRow('name','badge','Nome',mbRaw?mbRaw.name:''),
+      cfgGenres:cfgRow('genres','library_music','Gêneros',bGenres.join(', ')||'Nenhum gênero'),
+      cfgGoal:cfgRow('goal','flag','Objetivo',mbRaw?mbRaw.goal:''),
+      cfgVagas:cfgRow('vagas','person_add','Vagas abertas',vagaSummary(mbRaw?mbRaw.vagas:[])),
+      cfgSlots:cfgRow('slots','calendar_month','Horários de ensaio',bSlots.length?bSlots.map(slotText).join(' · '):'A definir'),
+      cfgRep:cfgRow('rep','queue_music','Repertório',mbRaw&&mbRaw.rep&&mbRaw.rep.length?mbRaw.rep.length+(mbRaw.rep.length>1?' músicas':' música'):'Nenhuma música'),
+      cfgMembers:cfgRow('members','group','Integrantes',mbRaw?mbRaw.members.length+(mbRaw.members.length>1?' integrantes':' integrante'):''),
+      cfgDanger:cfgRow('danger',isOwner?'delete':'logout',isOwner?'Excluir banda':'Sair da banda',isOwner?'Remove a banda para todos':'Sua vaga volta a ficar aberta',true),
+      eGenreChips:[...new Set([...GENRES,...bGenres])].map(g=>chip(g,bGenres.includes(g),()=>live(b=>{const a=b.genres.split(' · ').filter(x=>x&&x!=='—'),n=a.includes(g)?a.filter(x=>x!==g):[...a,g];return {...b,genres:n.join(' · ')||'—'};}))),
+      eGoalOpts:GOALS.map(l=>({...l,bd:mbRaw&&mbRaw.goal===l.label?INK:'#e6e2da',onClick:()=>live(b=>({...b,goal:l.label}))})),
+      eVagaChips:vagaChipsFor(mbRaw?mbRaw.vagas:[],f=>live(b=>({...b,vagas:f(b.vagas)}))),
+      eAvailCells:PER.flatMap(p=>[{isLabel:true,isCell:false,label:p},...DAYS.map(d=>{const k=d+'-'+p,on=bSlots.includes(k);return {isLabel:false,isCell:true,bg:on?INK:'#fff',bd:on?INK:LINE,onClick:()=>setSlots(on?bSlots.filter(x=>x!==k):[...bSlots,k])};})]),
+      eHasRep:!!(mbRaw&&mbRaw.rep&&mbRaw.rep.length),eRepV:(mbRaw&&mbRaw.rep||[]).map((r,k)=>({...r,n:String(k+1).padStart(2,'0'),remove:()=>live(b=>({...b,rep:b.rep.filter((_,j)=>j!==k)}))})),
+      eSongBox:songBox('es',mbRaw&&mbRaw.rep||[],r=>live(b=>({...b,rep:[...(b.rep||[]),r]}))),
+      cfgMembersV:mbRaw?mbRaw.members.map(m=>{const self=m.n.includes('(você)'),first=m.n.split(' ')[0],ask=st.memberConfirm===m.n;return {...m,pic:pic(m.i),hasTag:!!m.tag,
+        canRemove:isOwner&&!self&&!ask,asking:ask,confirmText:'Remover '+first+' da banda? A vaga de '+m.r+' volta a ficar aberta.',
+        ask:()=>this.setState({memberConfirm:m.n}),cancel:()=>this.setState({memberConfirm:null}),
+        remove:()=>{live(b=>({...b,members:b.members.filter(x=>x.n!==m.n),vagas:[...b.vagas,m.r],msgs:[...b.msgs,{sys:true,t:first+' saiu da banda. Vaga de '+m.r+' reaberta.'}]}));this.setState({memberConfirm:null});}};}):[],
+      isOwnerCfg:isOwner,
+      confirmText:isOwner?'Tem certeza? A banda some para todos os integrantes e não dá para desfazer.':'Tem certeza que quer sair de '+(mbRaw?mbRaw.name:'')+'?',
+      confirmCta:isOwner?'Sim, excluir banda':'Sim, sair da banda',doDanger:removeBand,
 isCreate:st.bandsView==='create',createBg:st.bandsView==='create'?'#fff':'transparent',
       myBandPills:st.myBands.map(b=>{const on=st.bandsView==='band'&&mbRaw&&b.id===mbRaw.id,R=ROLE[b.role];return {name:b.name,role:R[0],tagBg:R[1],tagFg:R[2],bg:on?'#fff':'transparent',fg:INK,bd:on?INK:LINE,onClick:()=>this.setState({myBandId:b.id,bandsView:'band',bandSub:'band'})};}),
       goCreate:()=>this.go('create'),mb,
@@ -268,8 +282,7 @@ isCreate:st.bandsView==='create',createBg:st.bandsView==='create'?'#fff':'transp
       cAvailCells:PER.flatMap(p=>[{isLabel:true,isCell:false,label:p},...DAYS.map(d=>{const k=d+'-'+p,on=!!st.cAvail[k];return {isLabel:false,isCell:true,bg:on?INK:'#fff',bd:on?INK:LINE,onClick:()=>this.setState(s=>({cAvail:{...s.cAvail,[k]:!s.cAvail[k]}}))};})]),
       cAvailSummary:(()=>{const k=Object.keys(st.cAvail).filter(x=>st.cAvail[x]);return k.length?k.map(x=>x.replace('-',' ').toLowerCase()).join(' · '):'Nenhum horário marcado. Pode definir depois.';})(),
       cHasRep:st.cRep.length>0,cRepV:st.cRep.map((r,k)=>({...r,n:String(k+1).padStart(2,'0'),remove:()=>this.setState(s=>({cRep:s.cRep.filter((_,j)=>j!==k)}))})),
-      cSong:st.cSong,cArtist:st.cArtist,onCSong:e=>this.setState({cSong:e.target.value}),onCArtist:e=>this.setState({cArtist:e.target.value}),
-      addSong:addSong,onRepKey:e=>{if(e.key==='Enter')addSong();},addSongBg:st.cSong.trim()?INK:'#d9d3c8',
+      cSongBox:songBox('cs',st.cRep,r=>this.setState(s=>({cRep:[...s.cRep,r]}))),
       publishBg:st.cName.trim()&&st.cInst&&st.cGoal?'#e8774f':'#d9d3c8',publishFg:st.cName.trim()&&st.cInst&&st.cGoal?INK:'#f7f5f0',
       cancelCreate:()=>this.go('bands'),
       publishBand:()=>{ const name=st.cName.trim(); if(!name||!st.cInst||!st.cGoal) return; const id='b'+Date.now(); const ck=Object.keys(st.cAvail).filter(x=>st.cAvail[x]); const when=ck.length?ck.map(x=>x.replace('-',' ').toLowerCase()).join(', '):'A definir';
