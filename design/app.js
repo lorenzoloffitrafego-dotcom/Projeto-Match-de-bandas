@@ -11,12 +11,13 @@ const BANDS=[
  {id:'dom',name:'Domingo Cedo',goal:SG,when:'Sáb · 10h–12h',slot:'Sáb-Manhã',where:'Sala 1 · Escola',vaga:'Guitarra',genres:'MPB · Indie folk',rep:[{t:'Trem-Bala',a:'Ana Vilela'},{t:'Velha Infância',a:'Tribalistas'},{t:'Ho Hey',a:'The Lumineers'}],members:[{i:'CM',n:'Carol Melo',r:'Voz',lvl:'Intermediário',lead:true},{i:'TH',n:'Thiago Reis',r:'Teclado',lvl:'Avançado'}],rp:60,req:'Básico'},
  {id:'vol',name:'Volume 7',goal:'Tocar fora',when:'Sex · 20h–23h',slot:'Sex-Noite',where:'Estúdio externo',vaga:'Guitarra',genres:'Hard rock · Metal',rep:[{t:'Enter Sandman',a:'Metallica'},{t:'Roots Bloody Roots',a:'Sepultura'},{t:'Back in Black',a:'AC/DC'}],members:[{i:'GF',n:'Gui Faria',r:'Voz',lvl:'Avançado',lead:true},{i:'DN',n:'Duda Nunes',r:'Baixo',lvl:'Avançado'},{i:'PK',n:'Pedro Kim',r:'Bateria',lvl:'Avançado'}],rp:60,req:'Avançado'}
 ];
+const LEAD_PHONE={fio:'(11) 99654-2210',dom:'(11) 98120-4476',vol:'(11) 97342-8813'};
 const NAV=[['login','Login'],['onb','Cadastro'],['profile','Meu perfil'],['search','Procurar bandas'],['detail','Detalhe da banda'],['sent','Solicitações enviadas'],['bands','Minhas bandas'],['create','Criar banda']];
-const STATUS={pending:{l:'Pendente',bg:'#f6ecd2',fg:'#7a5a12'},accepted:{l:'Aceita',bg:'#e3efe6',fg:'#2f6b45'},declined:{l:'Recusada',bg:'#efebe4',fg:'#6b665e'}};
+const STATUS={pending:{l:'Pendente',bg:'#f6ecd2',fg:'#7a5a12'},testing:{l:'Em teste',bg:'#e4e0ea',fg:'#4b3f72'},accepted:{l:'Aceita',bg:'#e3efe6',fg:'#2f6b45'},declined:{l:'Recusada',bg:'#efebe4',fg:'#6b665e'}};
 const TEST={fio:{w:'Qui, 15 out · 19h–21h',m:'Oi Lucas! Curtimos seu perfil. Bora fazer um ensaio teste na quinta? Pensamos em Do I Wanna Know, Equalize e Last Nite.'},dom:{w:'Sáb, 17 out · 10h–12h',m:'Oi Lucas, bem-vindo! Sábado de manhã funciona pra um ensaio teste?'},vol:{w:'Sex, 16 out · 20h–23h',m:'Fala Lucas! Sexta tem ensaio no estúdio, cola lá pra testar.'}};
 const G22={id:'g22',slots:['Ter-Noite'],name:'Garagem 22',role:'owner',genres:'Rock alternativo · Indie',goal:'Apresentação de vez em quando',when:'Ter · 19h–21h',where:'Sala 2 · Escola',vagas:['Bateria','Voz'],
   members:[{i:'LM',n:'Lucas Martins (você)',r:'Guitarra',lvl:'Intermediário',tag:'Líder'}],
-  reqs:[{id:'mt',i:'MP',n:'Mateus Prado',r:'Bateria',lvl:'Intermediário',insts:[['Bateria','Intermediário'],['Percussão','Básico']],goal:SG,genres:['Rock alternativo','Indie','Punk'],avail:['Ter-Noite','Qui-Noite','Sáb-Tarde'],city:'São Paulo, SP',first:'Valeu por aceitar! Terça às 19h funciona pra mim.',status:'pending'},{id:'ju',i:'JR',n:'Júlia Reis',r:'Voz',lvl:'Básico',insts:[['Voz','Básico']],goal:'Hobby',genres:['Pop','Rock nacional','MPB'],avail:['Ter-Noite','Sex-Noite'],city:'São Paulo, SP',first:'Oba! Posso levar a letra de Admirável Chip Novo?',status:'pending'}],
+  reqs:[{id:'mt',phone:'(11) 98412-3307',test:null,i:'MP',n:'Mateus Prado',r:'Bateria',lvl:'Intermediário',insts:[['Bateria','Intermediário'],['Percussão','Básico']],goal:SG,genres:['Rock alternativo','Indie','Punk'],avail:['Ter-Noite','Qui-Noite','Sáb-Tarde'],city:'São Paulo, SP',first:'Valeu por aceitar! Terça às 19h funciona pra mim.',status:'pending'},{id:'ju',phone:'(11) 97730-5521',test:null,i:'JR',n:'Júlia Reis',r:'Voz',lvl:'Básico',insts:[['Voz','Básico']],goal:'Hobby',genres:['Pop','Rock nacional','MPB'],avail:['Ter-Noite','Sex-Noite'],city:'São Paulo, SP',first:'Oba! Posso levar a letra de Admirável Chip Novo?',status:'pending'}],
   rep:[{t:'Everlong',a:'Foo Fighters'},{t:'Reptilia',a:'The Strokes'},{t:'Admirável Chip Novo',a:'Pitty'}],
   reh:{label:'PRÓXIMO ENSAIO',when:'Ter, 13 out · 19h–21h',where:'Sala 2 · Escola',confirmed:true},
   msgs:[{sys:true,t:'Banda criada. Quando alguém entrar, a conversa aparece aqui.'}]};
@@ -39,6 +40,9 @@ const dropOne=(a,v)=>{const i=a.lastIndexOf(v);return i<0?a:a.filter((_,j)=>j!==
 const vagaSummary=a=>{if(!a.length)return 'Nenhuma vaga aberta';const c={};a.forEach(v=>c[v]=(c[v]||0)+1);const n=a.length;return n+(n>1?' vagas: ':' vaga: ')+Object.entries(c).map(([v,k])=>(k>1?k+'× ':'')+v).join(', ');};
 // Chips de vaga com contador: toque adiciona; − e + ajustam quantas vagas daquele instrumento.
 const vagaChipsFor=(list,update)=>INSTR.map(n=>{const k=list.filter(x=>x===n).length;return {label:n,ico:ico(n,k?'#f7f5f0':INK),off:!k,on:!!k,n:k,add:()=>update(a=>[...a,n]),sub:()=>update(a=>dropOne(a,n))};});
+const MONTHS=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+// "2026-10-14" + "19:00" -> "Qua, 14 out · 19:00"
+const fmtTest=t=>{if(!t||!t.date)return '';const d=new Date(t.date+'T12:00');return DAYS[(d.getDay()+6)%7]+', '+d.getDate()+' '+MONTHS[d.getMonth()]+(t.time?' · '+t.time:'');};
 const mc=v=>v>=85?OK:v>=65?'#8a6a1f':ACC;
 const chip=(label,on,onClick)=>({label,onClick,bg:on?INK:'#fff',fg:on?'#f7f5f0':INK,bd:on?INK:LINE});
 
@@ -126,7 +130,7 @@ class Component extends DCLogic {
     const TAG={'Líder':['#efe9df','#4a463f'],'Em teste':['#f6ecd2','#7a5a12']};
     const pendOwner=st.myBands.filter(b=>b.role==='owner').reduce((n,b)=>n+b.reqs.filter(r=>r.status==='pending').length,0);
     let mb={};
-    if(mbRaw){ const pr=mbRaw.reqs.filter(r=>r.status==='pending');
+    if(mbRaw){ const pr=mbRaw.reqs.filter(r=>r.status==='pending'||r.status==='testing');
       mb={...mbRaw,roleUpper:(mbRaw.role==='owner'?'VOCÊ CRIOU ESTA BANDA':mbRaw.role==='trial'?'VOCÊ ESTÁ EM ENSAIO TESTE':'VOCÊ É MEMBRO'),
         memberCount:mbRaw.members.length,memberNames:mbRaw.members.map(m=>m.n.replace(' (você)','').split(' ')[0]).join(', '),
         membersV:mbRaw.members.map(m=>{const self=m.n.includes('(você)');return {...m,ico:ico(m.r,INK),pic:pic(m.i),hasTag:!!m.tag,
@@ -141,8 +145,18 @@ class Component extends DCLogic {
           goalFit:r.goal===mbRaw.goal?'Mesmo objetivo da banda':'Banda: '+mbRaw.goal,goalFg:r.goal===mbRaw.goal?OK:'#7a5a12',
           timeFit:!bs.length?'A banda ainda não definiu horário':ov?'Livre no horário de ensaio da banda':'Não está livre no horário da banda',timeFg:!bs.length?'#6b665e':ov?OK:'#7a5a12',
           cal:PER.flatMap(p=>[{isLabel:true,isCell:false,label:p[0]},...DAYS.map(dd=>{const k=dd+'-'+p,b1=bs.includes(k),me=(r.avail||[]).includes(k);return {isLabel:false,isCell:true,bg:b1?INK:me?'#e3efe6':'#f3efe8',bd:b1?(me?'#7fc493':INK):me?'#9cc8a8':'#efebe4'};})]),
+          isPending:r.status==='pending',isTesting:r.status==='testing',showActions:r.status==='pending'&&st.schedFor!==r.id,
+          schedOpen:st.schedFor===r.id,schedDate:st.schedDate||'',schedTime:st.schedTime||'',
+          onSchedDate:e=>this.setState({schedDate:e.target.value}),onSchedTime:e=>this.setState({schedTime:e.target.value}),
+          openSched:()=>this.setState({schedFor:r.id,schedDate:r.test&&r.test.date||'',schedTime:r.test&&r.test.time||''}),cancelSched:()=>this.setState({schedFor:null}),
+          schedTitle:r.status==='pending'?'Chamar '+r.n.split(' ')[0]+' pra teste':'Data do teste',schedCta:r.status==='pending'?'Chamar pra teste':'Salvar data',
+          confirmSched:()=>{const d=st.schedDate;patchBand(mbRaw.id,b=>({...b,reqs:b.reqs.map(x=>x.id===r.id?{...x,status:'testing',test:d?{date:d,time:st.schedTime}:null}:x)}));this.setState({schedFor:null});},
+          hasTestDate:!!(r.test&&r.test.date),testText:r.test&&r.test.date?fmtTest(r.test):'Sem data marcada',schedLink:r.test&&r.test.date?'Remarcar':'Agendar',
+          vagaFull:r.status==='testing'&&!mbRaw.vagas.includes(r.r),canJoin:!mbRaw.vagas.includes(r.r)?false:true,
+          joinBg:mbRaw.vagas.includes(r.r)?'#e8774f':'#e6e2da',joinFg:mbRaw.vagas.includes(r.r)?'#1d1b18':'#8f897f',
+          fullText:'A vaga de '+r.r+' já foi preenchida.',
           decline:()=>patchBand(mbRaw.id,b=>({...b,reqs:b.reqs.map(x=>x.id===r.id?{...x,status:'declined'}:x)})),
-          accept:()=>patchBand(mbRaw.id,b=>({...b,reqs:b.reqs.map(x=>x.id===r.id?{...x,status:'accepted'}:x),vagas:dropOne(b.vagas,r.r),members:[...b.members,{i:r.i,n:r.n,r:r.r,lvl:r.lvl,tag:''}],msgs:[...b.msgs,{sys:true,t:r.n.split(' ')[0]+' entrou na banda.'},{a:r.n.split(' ')[0],i:r.i,t:r.first}]}))};}),
+          accept:()=>mbRaw.vagas.includes(r.r)&&patchBand(mbRaw.id,b=>({...b,reqs:b.reqs.map(x=>x.id===r.id?{...x,status:'accepted'}:x),vagas:dropOne(b.vagas,r.r),members:[...b.members,{i:r.i,n:r.n,r:r.r,lvl:r.lvl,tag:''}],msgs:[...b.msgs,{sys:true,t:r.n.split(' ')[0]+' entrou na banda.'},{a:r.n.split(' ')[0],i:r.i,t:r.first}]}))};}),
         cal:PER.flatMap(p=>[{isLabel:true,isCell:false,label:p[0]},...DAYS.map(dd=>{const k=dd+'-'+p,on=(mbRaw.slots||[]).includes(k);return {isLabel:false,isCell:true,bg:on?INK:'#f3efe8',bd:on?INK:'#efebe4'};})]),
         hasRep:!!(mbRaw.rep&&mbRaw.rep.length),noRep:!(mbRaw.rep&&mbRaw.rep.length),repCount:(mbRaw.rep||[]).length+' músicas',repV:(mbRaw.rep||[]).map((r,k)=>({...r,n:String(k+1).padStart(2,'0')})),
         rehPending:!mbRaw.reh.confirmed,rehConfirmed:mbRaw.reh.confirmed,rehBd:mbRaw.reh.confirmed?'#e6e2da':ACC}; }
@@ -223,8 +237,8 @@ class Component extends DCLogic {
       searchSubs:[['match','Compatíveis',shown.length],['sent','Solicitações enviadas',st.sent.length]].map(([k,label,n])=>({label,n,...seg(st.searchSub===k),onClick:()=>this.setState({searchSub:k})})),
       filterChips:[chip('Horário compatível',st.fTime,()=>this.setState({fTime:!st.fTime})),chip('Mesmo objetivo',st.fGoal,()=>this.setState({fGoal:!st.fGoal})),chip('Meu nível',st.fLvl,()=>this.setState({fLvl:!st.fLvl}))],
       bandsShown:shown,hiddenCountShow:all.length>shown.length,hiddenText:(all.length-shown.length)+' banda(s) oculta(s) pelos filtros ou descartada(s)',
-      sentList:st.sent.map(x=>{const b=BANDS.find(y=>y.id===x.bandId),T=STATUS[x.status];return {name:b.name,ico:ico(b.vaga,INK),meta:'Vaga: '+b.vaga+' · '+b.genres+' · enviada em '+x.date,statusLabel:T.l,sBg:T.bg,sFg:T.fg,isPending:x.status==='pending',isAccepted:x.status==='accepted',
-        view:()=>this.setState({bandId:b.id,searchView:'detail'}),cancel:()=>this.setState(s=>({sent:s.sent.filter(y=>y.bandId!==b.id)})),simulate:()=>this.acceptSent(b.id),
+      sentList:st.sent.map(x=>{const b=BANDS.find(y=>y.id===x.bandId),T=STATUS[x.status];return {name:b.name,ico:ico(b.vaga,INK),meta:x.status==='testing'?'Vaga: '+b.vaga+' · combine o teste com '+b.members.find(m=>m.lead).n.split(' ')[0]+' pelo WhatsApp '+LEAD_PHONE[b.id]:'Vaga: '+b.vaga+' · '+b.genres+' · enviada em '+x.date,statusLabel:T.l+(x.status==='testing'&&x.test?' · '+fmtTest(x.test):''),sBg:T.bg,sFg:T.fg,isPending:x.status==='pending'||x.status==='testing',isAccepted:x.status==='accepted',simLabel:x.status==='pending'?'Simular chamada pra teste':'Simular entrada',
+        view:()=>this.setState({bandId:b.id,searchView:'detail'}),cancel:()=>this.setState(s=>({sent:s.sent.filter(y=>y.bandId!==b.id)})),simulate:()=>x.status==='pending'?this.setState(s=>({sent:s.sent.map(y=>y.bandId===b.id?{...y,status:'testing',test:{date:'2026-10-17',time:'10:00'}}:y)})):this.acceptSent(b.id),
         goBand:()=>this.setState({tab:'bands',bandsView:'band',myBandId:b.id})};}),
       noSent:!st.sent.length,
       band,backToSearch:()=>this.setState({searchView:'list'}),

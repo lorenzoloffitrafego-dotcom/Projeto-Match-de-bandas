@@ -381,7 +381,7 @@
                         <sc-if value="{{ s.isPending }}" hint-placeholder-val="{{ true }}">
                           <button sc-camel-on-click="{{ s.view }}" style="height:40px;padding:0 16px;border-radius:20px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Ver banda</button>
                           <button sc-camel-on-click="{{ s.cancel }}" style="height:40px;padding:0 14px;border-radius:20px;border:none;background:transparent;color:#6b665e;font-size:14px;font-weight:600">Cancelar</button>
-                          <button sc-camel-on-click="{{ s.simulate }}" title="Só no protótipo" style="height:40px;padding:0 14px;border-radius:20px;border:1px dashed #b4502e;background:transparent;color:#b4502e;font-size:13px;font-weight:600">Simular aceite</button>
+                          <button sc-camel-on-click="{{ s.simulate }}" title="Só no protótipo" style="height:40px;padding:0 14px;border-radius:20px;border:1px dashed #b4502e;background:transparent;color:#b4502e;font-size:13px;font-weight:600">{{ s.simLabel }}</button>
                         </sc-if>
                         <sc-if value="{{ s.isAccepted }}" hint-placeholder-val="{{ false }}">
                           <button sc-camel-on-click="{{ s.goBand }}" style="display:flex;align-items:center;gap:6px;height:40px;padding:0 16px;border-radius:20px;border:none;background:#1d1b18;color:#f7f5f0;font-size:14px;font-weight:600">Abrir em Minhas bandas<span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">arrow_forward</span></button>
@@ -764,11 +764,44 @@
                             <span style="font:700 19px 'Bricolage Grotesque',sans-serif">{{ q.n }}</span>
                             <span style="display:flex;align-items:center;gap:4px;font-size:14px;color:#6b665e"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">location_on</span>{{ q.city }}</span>
                           </div>
-                          <div style="display:flex;gap:8px">
-                            <button sc-camel-on-click="{{ q.decline }}" style="height:42px;padding:0 18px;border-radius:21px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Recusar</button>
-                            <button sc-camel-on-click="{{ q.accept }}" style="height:42px;padding:0 20px;border-radius:21px;border:none;background:#e8774f;color:#1d1b18;font-size:14px;font-weight:600">Aceitar</button>
-                          </div>
+                          <sc-if value="{{ q.showActions }}" hint-placeholder-val="{{ true }}">
+                            <div style="display:flex;gap:8px">
+                              <button sc-camel-on-click="{{ q.decline }}" style="height:42px;padding:0 18px;border-radius:21px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Recusar</button>
+                              <button sc-camel-on-click="{{ q.openSched }}" style="height:42px;padding:0 20px;border-radius:21px;border:none;background:#1d1b18;color:#f7f5f0;font-size:14px;font-weight:600">Chamar pra teste</button>
+                            </div>
+                          </sc-if>
+                          <sc-if value="{{ q.isTesting }}" hint-placeholder-val="{{ false }}">
+                            <span style="padding:6px 12px;border-radius:12px;background:#e4e0ea;color:#4b3f72;font-size:13px;font-weight:700">EM TESTE</span>
+                          </sc-if>
                         </div>
+                        <sc-if value="{{ q.schedOpen }}" hint-placeholder-val="{{ false }}">
+                          <div style="display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:16px;background:#fbfaf7;border:1.5px solid #1d1b18">
+                            <div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 17px 'Bricolage Grotesque',sans-serif">{{ q.schedTitle }}</span><span style="font-size:13px;color:#6b665e">Agendar é opcional: dá pra deixar em branco e combinar pelo WhatsApp.</span></div>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;max-width:420px">
+                              <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#4a463f">Data</span><input type="date" value="{{ q.schedDate }}" sc-camel-on-change="{{ q.onSchedDate }}" style="height:44px;border-radius:12px;border:1px solid #ddd8ce;background:#fff;padding:0 12px;font-size:15px;color:#1d1b18;outline:none;box-sizing:border-box;width:100%"></label>
+                              <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:#4a463f">Hora</span><input type="time" value="{{ q.schedTime }}" sc-camel-on-change="{{ q.onSchedTime }}" style="height:44px;border-radius:12px;border:1px solid #ddd8ce;background:#fff;padding:0 12px;font-size:15px;color:#1d1b18;outline:none;box-sizing:border-box;width:100%"></label>
+                            </div>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap"><button sc-camel-on-click="{{ q.cancelSched }}" style="height:42px;padding:0 18px;border-radius:21px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Cancelar</button><button sc-camel-on-click="{{ q.confirmSched }}" style="height:42px;padding:0 20px;border-radius:21px;border:none;background:#1d1b18;color:#f7f5f0;font-size:14px;font-weight:600">{{ q.schedCta }}</button></div>
+                          </div>
+                        </sc-if>
+                        <sc-if value="{{ q.isTesting }}" hint-placeholder-val="{{ false }}">
+                          <div style="display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:16px;background:#f7f5f0">
+                            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                              <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#4b3f72">event</span>
+                              <span style="font-size:15px;font-weight:600">Teste: {{ q.testText }}</span>
+                              <button sc-camel-on-click="{{ q.openSched }}" style="padding:0;border:none;background:transparent;color:#b4502e;font-size:14px;font-weight:600">{{ q.schedLink }}</button>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:10px">
+                              <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#2f6b45">call</span>
+                              <span style="font-size:15px">WhatsApp: <b>{{ q.phone }}</b></span>
+                            </div>
+                            <sc-if value="{{ q.vagaFull }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:#f6ecd2;color:#7a5a12;font-size:13px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">info</span>{{ q.fullText }}</span></sc-if>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                              <button sc-camel-on-click="{{ q.decline }}" style="height:42px;padding:0 18px;border-radius:21px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Não seguir</button>
+                              <button sc-camel-on-click="{{ q.accept }}" style="height:42px;padding:0 20px;border-radius:21px;border:none;background:{{ q.joinBg }};color:{{ q.joinFg }};font-size:14px;font-weight:600">Colocar na banda</button>
+                            </div>
+                          </div>
+                        </sc-if>
                         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;padding-top:20px;border-top:1px solid #efebe4">
                           <div style="display:flex;flex-direction:column;gap:20px">
                             <div style="display:flex;flex-direction:column;gap:10px">
