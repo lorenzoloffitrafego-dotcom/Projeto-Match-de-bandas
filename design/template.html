@@ -577,15 +577,42 @@
 
         <sc-if value="{{ isBands }}" hint-placeholder-val="{{ false }}">
           <div style="max-width:1280px;margin:0 auto;padding:clamp(24px,4vw,40px) clamp(20px,4vw,48px);display:flex;flex-direction:column;gap:24px;box-sizing:border-box">
-            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-              <h1 style="margin:0 12px 0 0;font:700 36px/1.05 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">Minhas bandas</h1>
-              <div style="flex:1;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-                <sc-for list="{{ myBandPills }}" as="p" hint-placeholder-count="1">
-                  <button sc-camel-on-click="{{ p.onClick }}" style="display:flex;align-items:center;gap:8px;height:40px;padding:0 8px 0 16px;border-radius:20px;border:1px solid {{ p.bd }};background:{{ p.bg }};color:{{ p.fg }};font-size:14px;font-weight:600">{{ p.name }}<span style="padding:3px 8px;border-radius:10px;background:{{ p.tagBg }};color:{{ p.tagFg }};font-size:11px;font-weight:700">{{ p.role }}</span></button>
-                </sc-for>
+            <sc-if value="{{ isBandList }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:20px">
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+                  <div style="display:flex;flex-direction:column;gap:4px">
+                    <h1 style="margin:0;font:700 36px/1.05 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">Minhas bandas</h1>
+                    <span style="font-size:15px;color:#6b665e">Bandas que você criou ou faz parte</span>
+                  </div>
+                </div>
+                <sc-if value="{{ hasBands }}" hint-placeholder-val="{{ true }}"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:16px">
+                  <sc-for list="{{ myBandCards }}" as="b" hint-placeholder-count="1">
+                    <button sc-camel-on-click="{{ b.open }}" style="display:flex;flex-direction:column;gap:18px;padding:22px;border-radius:22px;border:1px solid #e6e2da;background:#fff;text-align:left;color:#1d1b18;transition:box-shadow .2s,transform .2s" style-hover="box-shadow:0 12px 30px -16px rgba(29,27,24,.35);transform:translateY(-2px)">
+                      <span style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;width:100%">
+                        <span style="display:flex;flex-direction:column;gap:4px;min-width:0">
+                          <span style="font:700 22px/1.1 'Bricolage Grotesque',sans-serif">{{ b.name }}</span>
+                          <span style="font-size:14px;color:#6b665e">{{ b.genres }}</span>
+                        </span>
+                        <span style="padding:4px 10px;border-radius:10px;background:{{ b.tagBg }};color:{{ b.tagFg }};font-size:12px;font-weight:700;flex:none">{{ b.role }}</span>
+                      </span>
+                      <span style="display:flex;gap:6px;flex-wrap:wrap">
+                        <sc-if value="{{ b.hasPend }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;padding:4px 10px 4px 8px;border-radius:10px;background:#e8774f;color:#1d1b18;font-size:12px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">mark_email_unread</span>{{ b.pendText }}</span></sc-if>
+                        <span style="padding:5px 10px;border-radius:10px;background:#efe9df;color:#4a463f;font-size:12px;font-weight:600">{{ b.vagaText }}</span>
+                      </span>
+                      <span style="display:flex;align-items:center;gap:8px;margin-top:auto;width:100%">
+                        <span style="display:flex"><sc-for list="{{ b.membersV }}" as="m" hint-placeholder-count="2"><img sc-camel-src="{{ m.pic }}" alt="" style="display:block;width:30px;height:30px;border-radius:15px;background:#efe9df;object-fit:cover;flex:none;border:2px solid #fff;margin-right:-8px;box-sizing:content-box"></sc-for></span>
+                        <span style="flex:1;font-size:13px;color:#6b665e;margin-left:10px">{{ b.memberText }}</span>
+                        <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#6b665e">arrow_forward</span>
+                      </span>
+                    </button>
+                  </sc-for>
+                  <button sc-camel-on-click="{{ goCreate }}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:180px;padding:22px;border-radius:22px;border:1.5px dashed #c9c2b5;background:transparent;color:#1d1b18;font-size:15px;font-weight:600" style-hover="background:#fff"><span style="font-family:'Material Symbols Rounded';font-size:28px;line-height:1">add</span>Criar banda</button>
+                </div></sc-if>
               </div>
-              <button sc-camel-on-click="{{ goCreate }}" style="display:flex;align-items:center;gap:6px;height:40px;padding:0 16px 0 12px;border-radius:20px;border:1.5px dashed #c9c2b5;background:{{ createBg }};color:#1d1b18;font-size:14px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">add</span>Criar banda</button>
-            </div>
+            </sc-if>
+            <sc-if value="{{ notBandList }}" hint-placeholder-val="{{ false }}">
+              <button sc-camel-on-click="{{ backToBands }}" style="align-self:flex-start;display:flex;align-items:center;gap:4px;height:38px;padding:0 14px 0 8px;border-radius:19px;border:1px solid #ddd8ce;background:#fff;font-size:14px;font-weight:500;color:#1d1b18"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">chevron_left</span>Minhas bandas</button>
+            </sc-if>
 
             <sc-if value="{{ isBandView }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;flex-direction:column;gap:16px">

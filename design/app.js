@@ -64,7 +64,7 @@ class Component extends DCLogic {
   scrollRef=React.createRef();
   key(s){ if(s.screen==='login') return 'login'; if(s.screen==='onb') return 'onb'; if(s.tab==='profile') return 'profile'; if(s.tab==='search') return s.searchView==='detail'?'detail':s.searchSub==='sent'?'sent':'search'; return s.bandsView==='create'?'create':'bands'; }
   componentDidUpdate(){ const s=this.state,k=[this.key(s),s.step,s.myBandId,s.bandId].join('|'); if(this.lastKey!==undefined&&this.lastKey!==k&&this.scrollRef.current) this.scrollRef.current.scrollTop=0; this.lastKey=k; }
-  go=k=>this.setState({login:{screen:'login',authMode:'login',lPass:'',authErr:''},onb:{screen:'onb',step:0,editing:false},profile:{screen:'app',tab:'profile'},search:{screen:'app',tab:'search',searchView:'list',searchSub:'match'},detail:{screen:'app',tab:'search',searchView:'detail'},sent:{screen:'app',tab:'search',searchView:'list',searchSub:'sent'},bands:{screen:'app',tab:'bands',bandsView:'band'},create:{screen:'app',tab:'bands',bandsView:'create'}}[k]);
+  go=k=>this.setState({login:{screen:'login',authMode:'login',lPass:'',authErr:''},onb:{screen:'onb',step:0,editing:false},profile:{screen:'app',tab:'profile'},search:{screen:'app',tab:'search',searchView:'list',searchSub:'match'},detail:{screen:'app',tab:'search',searchView:'detail'},sent:{screen:'app',tab:'search',searchView:'list',searchSub:'sent'},bands:{screen:'app',tab:'bands',bandsView:'list',lChatId:null},create:{screen:'app',tab:'bands',bandsView:'create'}}[k]);
   lvlFor(n){const I=this.state.insts,x=I.find(i=>i.name===n&&i.level)||I.find(i=>i.level);return x?x.level:'Básico';}
   submitAuth=()=>{ const s=this.state,up=s.authMode==='signup',email=s.lEmail.trim();
     if(up&&!s.lName.trim()) return this.setState({authErr:'Informe seu nome.'});
@@ -182,7 +182,7 @@ class Component extends DCLogic {
     const setSlots=a=>{const ck=DAYS.flatMap(d=>PER.map(p=>d+'-'+p)).filter(k=>a.includes(k));live(b=>({...b,slots:ck,when:ck.length?ck.map(slotText).join(', '):'A definir'}));};
     const cfgRow=(k,icon,label,value,danger)=>{const on=st.cfgOpen===k;return {icon,label,value,isOpen:on,rot:on?'180deg':'0deg',ic:danger?ACC:'#6b665e',lc:danger?ACC:'#6b665e',
       toggle:()=>this.setState(s=>({cfgOpen:s.cfgOpen===k?null:k,cfgConfirm:false,memberConfirm:null,nameDraft:k==='name'&&mbRaw?mbRaw.name:s.nameDraft}))};};
-    const removeBand=()=>{if(!mbRaw)return;this.setState(s=>{const rest=s.myBands.filter(b=>b.id!==mbRaw.id);return {myBands:rest,myBandId:rest[0]?rest[0].id:null,bandSub:'band',cfgConfirm:false,sent:s.sent.filter(x=>x.bandId!==mbRaw.id)};});};
+    const removeBand=()=>{if(!mbRaw)return;this.setState(s=>{const rest=s.myBands.filter(b=>b.id!==mbRaw.id);return {myBands:rest,myBandId:rest[0]?rest[0].id:null,bandsView:'list',bandSub:'band',cfgConfirm:false,sent:s.sent.filter(x=>x.bandId!==mbRaw.id)};});};
     // Busca de músicas para o repertório: sugere do catálogo enquanto digita; um toque adiciona.
     const songBox=(k,rep,add)=>{const q=st[k+'Q']||'',idx=st[k+'Idx']||0,nq=norm(q),have=new Set(rep.map(r=>norm(r.t)));
       const list=nq?SONGS.filter(([t])=>!have.has(norm(t))).map(([t,a])=>{const nt=norm(t),na=norm(a);return [t,a,nt.startsWith(nq)?0:na.startsWith(nq)?1:nt.split(' ').some(w=>w.startsWith(nq))?2:nt.includes(nq)||na.includes(nq)?3:9];})
@@ -299,7 +299,7 @@ class Component extends DCLogic {
       isReqList:!lSel,isReqChat:!!lSel,closeChat:()=>this.setState({lChatId:null}),lChat,
       cChats:sentChats.map(x=>{const b=BANDS.find(y=>y.id===x.bandId),ld=b.members.find(m=>m.lead);return {name:b.name,sub:ld.n.split(' ')[0]+' · vaga de '+b.vaga,last:lastMsg(x.chat),pic:pic(ld.i),bg:x===cSelX?'#f3efe8':'transparent',open:()=>this.setState({cChatId:x.bandId})};}),
       cHasChat:!!cSelX,cNoChats:!sentChats.length,cChat,isChatsSub:st.searchSub==='chats',
-      isBandMain:sub==='band',isBandReqs:sub==='reqs',isBandCfg:sub==='cfg',isBandEmpty:st.bandsView==='band'&&!mbRaw,goSearch:()=>this.go('search'),
+      isBandMain:sub==='band',isBandReqs:sub==='reqs',isBandCfg:sub==='cfg',isBandEmpty:st.bandsView==='list'&&!st.myBands.length,isBandList:st.bandsView==='list',hasBands:st.myBands.length>0,notBandList:st.bandsView!=='list',backToBands:()=>this.go('bands'),goSearch:()=>this.go('search'),
       bandSubs:[['band','Banda'],...(isOwner?[['reqs','Solicitações']]:[]),['cfg','Configurações']].map(([k,label])=>{const on=sub===k,n=mbRaw?mbRaw.reqs.filter(r=>r.status==='pending').length:0;return {label,isText:k!=='cfg',isIcon:k==='cfg',px:k==='cfg'?'9px':'16px',bg:on?'#f7f5f0':'transparent',fg:on?INK:'#c9c2b5',badge:k==='reqs'&&n>0,n,onClick:()=>k==='cfg'?openCfg():this.setState({bandSub:k,lChatId:null})};}),
       cName2:st.nameDraft||'',onNameDraft:e=>{const v=e.target.value;this.setState({nameDraft:v});if(v.trim())live(b=>({...b,name:v.trim()}));},
       cfgName:cfgRow('name','badge','Nome',mbRaw?mbRaw.name:''),
@@ -324,7 +324,11 @@ class Component extends DCLogic {
       confirmText:isOwner?'Tem certeza? A banda some para todos os integrantes e não dá para desfazer.':'Tem certeza que quer sair de '+(mbRaw?mbRaw.name:'')+'?',
       confirmCta:isOwner?'Sim, excluir banda':'Sim, sair da banda',doDanger:removeBand,
 isCreate:st.bandsView==='create',createBg:st.bandsView==='create'?'#fff':'transparent',
-      myBandPills:st.myBands.map(b=>{const on=st.bandsView==='band'&&mbRaw&&b.id===mbRaw.id,R=ROLE[b.role];return {name:b.name,role:R[0],tagBg:R[1],tagFg:R[2],bg:on?'#fff':'transparent',fg:INK,bd:on?INK:LINE,onClick:()=>this.setState({myBandId:b.id,bandsView:'band',bandSub:'band'})};}),
+      myBandCards:st.myBands.map(b=>{const R=ROLE[b.role],pend=b.role==='owner'?b.reqs.filter(r=>r.status==='pending').length:0;return {name:b.name,genres:b.genres,role:R[0],tagBg:R[1],tagFg:R[2],
+        membersV:b.members.map(m=>({pic:pic(m.i)})),memberText:b.members.length+(b.members.length>1?' integrantes':' integrante'),
+        vagaText:b.vagas.length?vagaSummary(b.vagas).replace(/^\d+ vagas?: /,'Vagas: '):'Banda completa',hasVaga:b.vagas.length>0,
+        hasPend:pend>0,pendText:pend+(pend>1?' solicitações novas':' solicitação nova'),
+        open:()=>this.setState({myBandId:b.id,bandsView:'band',bandSub:'band',lChatId:null})};}),
       goCreate:()=>this.go('create'),mb,
       bandMsgs:mbRaw?mbRaw.msgs.map(m=>({t:m.t,a:m.a,i:m.i,pic:pic(m.i),isSys:!!m.sys,isMine:!!m.mine,isOther:!m.sys&&!m.mine})):[],
       confirmReh:()=>patchBand(mbRaw.id,b=>({...b,reh:{...b.reh,label:'PRÓXIMO ENSAIO · TESTE',confirmed:true},msgs:[...b.msgs,{mine:true,t:'Confirmado! Nos vemos no ensaio.'}]})),
