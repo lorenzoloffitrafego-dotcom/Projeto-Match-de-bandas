@@ -1,3 +1,20 @@
+<style>
+/* Ajustes para telas estreitas (celular). */
+@media (max-width:600px){
+  .bm-header{gap:8px !important;padding:10px 12px !important}
+  .bm-tabs{flex:1 1 100% !important}
+  .bm-tab{flex:1 1 0 !important;justify-content:center !important;gap:5px !important;padding:0 6px !important;font-size:13px !important;height:40px !important}
+  .bm-tab-ico{display:none !important}
+  .bm-aside{flex:1 1 100% !important;max-width:none !important;flex-direction:row !important;align-items:center !important;gap:16px !important;padding:14px 20px !important}
+  .bm-aside-hide{display:none !important}
+  .bm-steps{flex-direction:row !important;gap:8px !important;margin-left:auto}
+  .bm-step{padding:0 !important}
+  .bm-split{align-content:flex-start !important}
+  .bm-main{padding:28px 20px !important}
+  .bm-req-actions{width:100%}
+  .bm-req-actions > button{flex:1 1 auto;justify-content:center}
+}
+</style>
 <div style="height:100vh;display:flex;flex-direction:column">
   <div style="flex:none;display:flex;align-items:center;gap:6px;padding:6px 14px;background:#1d1b18;color:#c9c2b5;overflow-x:auto">
     <span style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;white-space:nowrap;margin-right:6px">PROTÓTIPO · TELAS</span>
@@ -7,19 +24,19 @@
   </div>
 
   <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
-    <div ref="{{ scrollRef }}" style="flex:1;overflow-y:auto;display:flex;flex-wrap:wrap">
-      <aside style="flex:1 1 320px;max-width:440px;display:flex;flex-direction:column;justify-content:space-between;gap:40px;padding:48px;background:#efe9df;box-sizing:border-box">
+    <div class="bm-split" ref="{{ scrollRef }}" style="flex:1;overflow-y:auto;display:flex;flex-wrap:wrap">
+      <aside class="bm-aside" style="flex:1 1 320px;max-width:440px;display:flex;flex-direction:column;justify-content:space-between;gap:40px;padding:48px;background:#efe9df;box-sizing:border-box">
         <div style="display:flex;align-items:center;gap:10px">
           <span style="width:40px;height:40px;border-radius:12px;background:#1d1b18;color:#f7f5f0;display:flex;align-items:center;justify-content:center;font:700 20px 'Bricolage Grotesque',sans-serif">B</span>
           <span style="font:700 20px 'Bricolage Grotesque',sans-serif">BandMatch</span>
         </div>
-        <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="bm-aside-hide" style="display:flex;flex-direction:column;gap:14px">
           <h1 style="margin:0;font:700 clamp(36px,4vw,52px)/1.02 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;text-wrap:balance">Encontre ou monte a sua banda.</h1>
           <p style="margin:0;font-size:16px;line-height:1.5;color:#4a463f;text-wrap:pretty">Conectamos músicos por instrumento, horário, objetivo e estilo.</p>
         </div>
-        <span></span>
+        <span class="bm-aside-hide"></span>
       </aside>
-      <main style="flex:2 1 480px;display:flex;justify-content:center;align-items:center;padding:56px 32px;box-sizing:border-box">
+      <main class="bm-main" style="flex:2 1 480px;display:flex;justify-content:center;align-items:center;padding:56px 32px;box-sizing:border-box">
         <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:24px">
           <div style="display:flex;flex-direction:column;gap:8px">
             <h2 style="margin:0;font:700 36px/1.08 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">{{ authTitle }}</h2>
@@ -55,23 +72,23 @@
   </sc-if>
 
   <sc-if value="{{ isOnb }}" hint-placeholder-val="{{ true }}">
-    <div ref="{{ scrollRef }}" style="flex:1;overflow-y:auto;display:flex;flex-wrap:wrap">
-      <aside style="flex:1 1 320px;max-width:440px;display:flex;flex-direction:column;justify-content:space-between;gap:40px;padding:48px;background:#efe9df;box-sizing:border-box">
+    <div class="bm-split" ref="{{ scrollRef }}" style="flex:1;overflow-y:auto;display:flex;flex-wrap:wrap">
+      <aside class="bm-aside" style="flex:1 1 320px;max-width:440px;display:flex;flex-direction:column;justify-content:space-between;gap:40px;padding:48px;background:#efe9df;box-sizing:border-box">
         <div style="display:flex;align-items:center;gap:10px">
           <span style="width:40px;height:40px;border-radius:12px;background:#1d1b18;color:#f7f5f0;display:flex;align-items:center;justify-content:center;font:700 20px 'Bricolage Grotesque',sans-serif">B</span>
           <span style="font:700 20px 'Bricolage Grotesque',sans-serif">BandMatch</span>
         </div>
-        <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="bm-steps" style="display:flex;flex-direction:column;gap:6px">
           <sc-for list="{{ onbSteps }}" as="s" hint-placeholder-count="4">
-            <div style="display:flex;align-items:center;gap:14px;padding:10px 0">
+            <div class="bm-step" style="display:flex;align-items:center;gap:14px;padding:10px 0">
               <span style="width:30px;height:30px;border-radius:15px;background:{{ s.bg }};color:{{ s.fg }};border:1px solid {{ s.bd }};display:flex;align-items:center;justify-content:center;font:700 12px 'JetBrains Mono',monospace;flex:none">{{ s.n }}</span>
-              <span style="font-size:15px;font-weight:{{ s.fw }};color:{{ s.tc }}">{{ s.label }}</span>
+              <span class="bm-aside-hide" style="font-size:15px;font-weight:{{ s.fw }};color:{{ s.tc }}">{{ s.label }}</span>
             </div>
           </sc-for>
         </div>
-        <span style="font-size:13px;line-height:1.5;color:#6b665e">Match de músicos para encontrar ou criar a sua banda.</span>
+        <span class="bm-aside-hide" style="font-size:13px;line-height:1.5;color:#6b665e">Match de músicos para encontrar ou criar a sua banda.</span>
       </aside>
-      <main style="flex:2 1 480px;display:flex;justify-content:center;padding:56px 32px;box-sizing:border-box">
+      <main class="bm-main" style="flex:2 1 480px;display:flex;justify-content:center;padding:56px 32px;box-sizing:border-box">
         <div style="width:100%;max-width:600px;display:flex;flex-direction:column;gap:32px">
 
           <sc-if value="{{ isStep0 }}" hint-placeholder-val="{{ true }}">
@@ -237,15 +254,15 @@
 
   <sc-if value="{{ isApp }}" hint-placeholder-val="{{ false }}">
     <div style="flex:1;display:flex;flex-direction:column;min-height:0">
-      <header style="flex:none;display:flex;align-items:center;gap:16px;min-height:68px;padding:10px clamp(16px,3vw,40px);box-sizing:border-box;background:#fff;border-bottom:1px solid #e6e2da;flex-wrap:wrap">
+      <header class="bm-header" style="flex:none;display:flex;align-items:center;gap:16px;min-height:68px;padding:10px clamp(16px,3vw,40px);box-sizing:border-box;background:#fff;border-bottom:1px solid #e6e2da;flex-wrap:wrap">
         <div style="flex:1;display:flex;align-items:center;gap:10px;min-width:140px">
           <span style="width:36px;height:36px;border-radius:11px;background:#1d1b18;color:#f7f5f0;display:flex;align-items:center;justify-content:center;font:700 18px 'Bricolage Grotesque',sans-serif">B</span>
           <span style="font:700 18px 'Bricolage Grotesque',sans-serif">BandMatch</span>
         </div>
-        <nav style="display:flex;gap:4px;padding:4px;border-radius:26px;background:#f3efe8">
+        <nav class="bm-tabs" style="display:flex;gap:4px;padding:4px;border-radius:26px;background:#f3efe8">
           <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
-            <button sc-camel-on-click="{{ t.onClick }}" style="position:relative;display:flex;align-items:center;gap:8px;height:44px;padding:0 18px 0 14px;border:none;border-radius:22px;background:{{ t.bg }};color:{{ t.fg }};box-shadow:{{ t.sh }};font-size:14px;font-weight:600;white-space:nowrap;transition:background .2s,color .2s">
-              <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;font-variation-settings:'FILL' {{ t.fill }},'wght' 500">{{ t.icon }}</span>{{ t.label }}
+            <button class="bm-tab" sc-camel-on-click="{{ t.onClick }}" style="position:relative;display:flex;align-items:center;gap:8px;height:44px;padding:0 18px 0 14px;border:none;border-radius:22px;background:{{ t.bg }};color:{{ t.fg }};box-shadow:{{ t.sh }};font-size:14px;font-weight:600;white-space:nowrap;transition:background .2s,color .2s">
+              <span class="bm-tab-ico" aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;font-variation-settings:'FILL' {{ t.fill }},'wght' 500">{{ t.icon }}</span>{{ t.label }}
               <sc-if value="{{ t.badge }}" hint-placeholder-val="{{ false }}"><span style="min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:9px;background:#b4502e;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ t.badgeN }}</span></sc-if>
             </button>
           </sc-for>
@@ -391,12 +408,18 @@
                           <span style="display:flex">
                             <sc-for list="{{ b.membersV }}" as="m" hint-placeholder-count="3"><img sc-camel-src="{{ m.pic }}" alt="" style="display:block;width:30px;height:30px;border-radius:15px;background:#efe9df;object-fit:cover;flex:none;border:2px solid #fff;margin-right:-8px;box-sizing:content-box"></sc-for>
                           </span>
-                          <span style="flex:1;font-size:13px;color:#6b665e;margin-left:10px">{{ b.members.length }} membros</span>
+                          <span style="flex:1;font-size:13px;color:#6b665e;margin-left:10px">{{ b.memberText }}</span>
                           
                         </span>
                       </button>
                     </sc-for>
                   </div>
+                  <sc-if value="{{ noBands }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:48px 24px;border-radius:20px;border:1.5px dashed #ddd8ce;text-align:center;color:#6b665e">
+                      <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:36px;line-height:1;color:#c9c2b5">search_off</span>
+                      <span style="font-size:15px">Nenhuma banda encontrada com essa busca ou esses filtros.</span>
+                    </div>
+                  </sc-if>
                   <sc-if value="{{ hiddenCountShow }}" hint-placeholder-val="{{ false }}">
                     <div style="font-size:13px;color:#6b665e">{{ hiddenText }}</div>
                   </sc-if>
@@ -450,11 +473,11 @@
                         <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:20px;background:#fbfaf7">
                           <sc-for list="{{ cChat.msgs }}" as="m" hint-placeholder-count="2">
                             <sc-if value="{{ m.isSys }}" hint-placeholder-val="{{ false }}"><div style="align-self:center;max-width:380px;padding:6px 12px;border-radius:10px;background:#efe9df;font-size:12px;line-height:1.4;color:#4a463f;text-align:center">{{ m.t }}</div></sc-if>
-                            <sc-if value="{{ m.isMine }}" hint-placeholder-val="{{ false }}"><div style="align-self:flex-end;max-width:min(440px,75%);padding:10px 14px;border-radius:18px 18px 4px 18px;background:#1d1b18;color:#f7f5f0;font-size:15px;line-height:1.4">{{ m.t }}</div></sc-if>
+                            <sc-if value="{{ m.isMine }}" hint-placeholder-val="{{ false }}"><div style="align-self:flex-end;max-width:min(440px,75%);padding:10px 14px;border-radius:18px 18px 4px 18px;overflow-wrap:anywhere;background:#1d1b18;color:#f7f5f0;font-size:15px;line-height:1.4">{{ m.t }}</div></sc-if>
                             <sc-if value="{{ m.isOther }}" hint-placeholder-val="{{ true }}">
                               <div style="align-self:flex-start;display:flex;align-items:flex-end;gap:8px;max-width:min(480px,82%)">
                                 <img sc-camel-src="{{ m.pic }}" alt="" style="display:block;width:30px;height:30px;border-radius:15px;background:#efe9df;object-fit:cover;flex:none">
-                                <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:12px;font-weight:600;color:#6b665e;padding-left:4px">{{ m.a }}</span><div style="padding:10px 14px;border-radius:18px 18px 18px 4px;background:#fff;border:1px solid #e6e2da;font-size:15px;line-height:1.4">{{ m.t }}</div></div>
+                                <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:12px;font-weight:600;color:#6b665e;padding-left:4px">{{ m.a }}</span><div style="padding:10px 14px;border-radius:18px 18px 18px 4px;overflow-wrap:anywhere;background:#fff;border:1px solid #e6e2da;font-size:15px;line-height:1.4">{{ m.t }}</div></div>
                               </div>
                             </sc-if>
                           </sc-for>
@@ -625,11 +648,11 @@
                       <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:20px;background:#fbfaf7">
                         <sc-for list="{{ bandMsgs }}" as="m" hint-placeholder-count="2">
                           <sc-if value="{{ m.isSys }}" hint-placeholder-val="{{ false }}"><div style="align-self:center;max-width:380px;padding:6px 12px;border-radius:10px;background:#efe9df;font-size:12px;line-height:1.4;color:#4a463f;text-align:center">{{ m.t }}</div></sc-if>
-                          <sc-if value="{{ m.isMine }}" hint-placeholder-val="{{ false }}"><div style="align-self:flex-end;max-width:min(440px,75%);padding:10px 14px;border-radius:18px 18px 4px 18px;background:#1d1b18;color:#f7f5f0;font-size:15px;line-height:1.4">{{ m.t }}</div></sc-if>
+                          <sc-if value="{{ m.isMine }}" hint-placeholder-val="{{ false }}"><div style="align-self:flex-end;max-width:min(440px,75%);padding:10px 14px;border-radius:18px 18px 4px 18px;overflow-wrap:anywhere;background:#1d1b18;color:#f7f5f0;font-size:15px;line-height:1.4">{{ m.t }}</div></sc-if>
                           <sc-if value="{{ m.isOther }}" hint-placeholder-val="{{ true }}">
                             <div style="align-self:flex-start;display:flex;align-items:flex-end;gap:8px;max-width:min(480px,82%)">
                               <img sc-camel-src="{{ m.pic }}" alt="" style="display:block;width:30px;height:30px;border-radius:15px;background:#efe9df;object-fit:cover;flex:none">
-                              <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:12px;font-weight:600;color:#6b665e;padding-left:4px">{{ m.a }}</span><div style="padding:10px 14px;border-radius:18px 18px 18px 4px;background:#fff;border:1px solid #e6e2da;font-size:15px;line-height:1.4">{{ m.t }}</div></div>
+                              <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:12px;font-weight:600;color:#6b665e;padding-left:4px">{{ m.a }}</span><div style="padding:10px 14px;border-radius:18px 18px 18px 4px;overflow-wrap:anywhere;background:#fff;border:1px solid #e6e2da;font-size:15px;line-height:1.4">{{ m.t }}</div></div>
                             </div>
                           </sc-if>
                         </sc-for>
@@ -865,7 +888,7 @@
                             <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font:700 19px 'Bricolage Grotesque',sans-serif">{{ q.n }}</span><sc-if value="{{ q.isChatting }}" hint-placeholder-val="{{ false }}"><span style="padding:3px 9px;border-radius:10px;background:#e4e0ea;color:#4b3f72;font-size:11px;font-weight:700">EM CONVERSA</span></sc-if></span>
                             <span style="display:flex;align-items:center;gap:4px;font-size:14px;color:#6b665e"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">location_on</span>{{ q.city }}</span>
                           </div>
-                          <div style="display:flex;gap:8px;flex-wrap:wrap">
+                          <div class="bm-req-actions" style="display:flex;gap:8px;flex-wrap:wrap">
                             <button sc-camel-on-click="{{ q.decline }}" style="height:42px;padding:0 18px;border-radius:21px;border:1px solid #ddd8ce;background:#fff;color:#1d1b18;font-size:14px;font-weight:600">Recusar</button>
                             <button sc-camel-on-click="{{ q.talk }}" style="display:flex;align-items:center;gap:6px;height:42px;padding:0 18px 0 14px;border-radius:21px;border:1px solid #1d1b18;background:#fff;color:#1d1b18;font-size:14px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">chat</span>{{ q.talkLabel }}<sc-if value="{{ q.hasUnread }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:10px;background:#d64545;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ q.unreadN }}</span></sc-if></button>
                             <button sc-camel-on-click="{{ q.accept }}" style="height:42px;padding:0 20px;border-radius:21px;border:none;background:{{ q.acceptBg }};color:{{ q.acceptFg }};font-size:14px;font-weight:600">Aceitar</button>
@@ -933,11 +956,11 @@
                         <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:20px;background:#fbfaf7">
                           <sc-for list="{{ lChat.msgs }}" as="m" hint-placeholder-count="2">
                             <sc-if value="{{ m.isSys }}" hint-placeholder-val="{{ false }}"><div style="align-self:center;max-width:380px;padding:6px 12px;border-radius:10px;background:#efe9df;font-size:12px;line-height:1.4;color:#4a463f;text-align:center">{{ m.t }}</div></sc-if>
-                            <sc-if value="{{ m.isMine }}" hint-placeholder-val="{{ false }}"><div style="align-self:flex-end;max-width:min(440px,75%);padding:10px 14px;border-radius:18px 18px 4px 18px;background:#1d1b18;color:#f7f5f0;font-size:15px;line-height:1.4">{{ m.t }}</div></sc-if>
+                            <sc-if value="{{ m.isMine }}" hint-placeholder-val="{{ false }}"><div style="align-self:flex-end;max-width:min(440px,75%);padding:10px 14px;border-radius:18px 18px 4px 18px;overflow-wrap:anywhere;background:#1d1b18;color:#f7f5f0;font-size:15px;line-height:1.4">{{ m.t }}</div></sc-if>
                             <sc-if value="{{ m.isOther }}" hint-placeholder-val="{{ true }}">
                               <div style="align-self:flex-start;display:flex;align-items:flex-end;gap:8px;max-width:min(480px,82%)">
                                 <img sc-camel-src="{{ m.pic }}" alt="" style="display:block;width:30px;height:30px;border-radius:15px;background:#efe9df;object-fit:cover;flex:none">
-                                <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:12px;font-weight:600;color:#6b665e;padding-left:4px">{{ m.a }}</span><div style="padding:10px 14px;border-radius:18px 18px 18px 4px;background:#fff;border:1px solid #e6e2da;font-size:15px;line-height:1.4">{{ m.t }}</div></div>
+                                <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:12px;font-weight:600;color:#6b665e;padding-left:4px">{{ m.a }}</span><div style="padding:10px 14px;border-radius:18px 18px 18px 4px;overflow-wrap:anywhere;background:#fff;border:1px solid #e6e2da;font-size:15px;line-height:1.4">{{ m.t }}</div></div>
                               </div>
                             </sc-if>
                           </sc-for>

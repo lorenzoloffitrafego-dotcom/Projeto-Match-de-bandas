@@ -13,6 +13,7 @@ Telas do protótipo: Cadastro, Meu perfil, Procurar bandas, Detalhe da banda, So
 - `index.html` — o app, pronto para rodar (gerado a partir de `design/`).
 - `design/template.html` — marcação das telas.
 - `design/app.js` — lógica e dados do protótipo (instrumentos, gêneros, bandas de exemplo, estado das telas).
+- `design/songs.js` — catálogo de músicas usado na busca do repertório.
 - `design/photos.js` — fotos dos usuários (retratos ilustrados DiceBear "Notionists", licença CC0), gerado por `tools/photos.mjs`.
 
 ## Editando
@@ -24,3 +25,13 @@ python3 tools/build.py
 ```
 
 O script coloca as mudanças dentro do `index.html`, mantendo o runtime, o React e as fontes embutidos.
+
+## Testando
+
+Depois de mudar algo, rode o teste dos fluxos principais (precisa do Playwright):
+
+```bash
+NODE_PATH=$(npm root -g) node tools/smoke.js
+```
+
+Ele percorre login, cadastro, busca, solicitações, conversas, configurações e criação de banda, no computador e no celular.
